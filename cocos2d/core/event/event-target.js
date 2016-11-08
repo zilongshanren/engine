@@ -41,7 +41,7 @@ var _doDispatchEvent = function (owner, event) {
     event.eventPhase = 1;
     for (i = cachedArray.length - 1; i >= 0; --i) {
         target = cachedArray[i];
-        if (target._isTargetActive(event.type) && target._capturingListeners) {
+        if (target._capturingListeners) {
             event.currentTarget = target;
             // fire event
             target._capturingListeners.invoke(event);
@@ -55,8 +55,8 @@ var _doDispatchEvent = function (owner, event) {
     cachedArray.length = 0;
 
     // Event.AT_TARGET
-    // checks if destroyed in capturing callbacks
-    if (owner._isTargetActive(event.type)) {
+    // checks if event target behavior prevented by capturing phase
+    if (!event._defaultPrevented) {
         // Event.AT_TARGET
         event.eventPhase = 2;
         event.currentTarget = owner;
@@ -75,7 +75,18 @@ var _doDispatchEvent = function (owner, event) {
         event.eventPhase = 3;
         for (i = 0; i < cachedArray.length; ++i) {
             target = cachedArray[i];
-            if (target._isTargetActive(event.type) && target._bubblingListeners) {
+            // Only start bubble from the capture target which prevented default target
+            // If the capture target isn't in the bubbling targets, then entre bubbling phase is skipped
+            if (event._defaultPrevented) {
+                if (target._doPreventDefault) {
+                    // Resume normal bubbling from here
+                    event._defaultPrevented = false;
+                }
+                else {
+                    continue;
+                }
+            }
+            if (target._bubblingListeners) {
                 event.currentTarget = target;
                 // fire event
                 target._bubblingListeners.invoke(event);
@@ -87,6 +98,8 @@ var _doDispatchEvent = function (owner, event) {
             }
         }
     }
+    // Reset defaultPrevented for next event loop
+    event._defaultPrevented = false;
     cachedArray.length = 0;
 };
 
@@ -132,6 +145,8 @@ var EventTarget = function () {
      * @private
      */
     this._bubblingListeners = null;
+
+    this._doPreventDefault = false;
 };
 
 JS.mixin(EventTarget.prototype, {
@@ -356,19 +371,6 @@ JS.mixin(EventTarget.prototype, {
         if (bublisteners && !event._propagationImmediateStopped) {
             this._bubblingListeners.invoke(event);
         }
-    },
-
-    /*
-     * Get whether the target is active for events.
-     * The name is for avoiding conflict with user defined functions.
-     *
-     * Subclasses can override this method to make event target active or inactive.
-     * @method _isTargetActive
-     * @param {String} type - the event type
-     * @return {Boolean} - A boolean value indicates the event target is active or not
-     */
-    _isTargetActive: function (type) {
-        return true;
     },
 
     /*

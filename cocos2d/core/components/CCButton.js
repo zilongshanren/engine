@@ -503,17 +503,7 @@ var Button = cc.Class({
             var sprite = this[state + 'Sprite'];
             this._applyTransition(color, sprite);
         }
-
-        if(!event._preventDefault) {
-            event.stopPropagation();
-        } else {
-            this._pressed = false;
-            if(this.transition === Transition.SCALE) {
-                this._zoomBack();
-            } else {
-                this._updateState();
-            }
-        }
+        event.stopPropagation();
     },
 
     _onTouchEnded: function (event) {

@@ -887,6 +887,8 @@ var ScrollView = cc.Class({
         if(event.target === this.node) {
             event.stopPropagation();
         }
+        // Reset flag
+        this.node._doPreventDefault = false;
     },
 
     _onTouchMovePreventDefault: function (event) {
@@ -901,7 +903,14 @@ var ScrollView = cc.Class({
         //FIXME: touch move delta should be calculated by DPI.
         if (cc.pLength(deltaMove) > 4) {
             if (event.target !== this.node) {
+                this.node._doPreventDefault = true;
                 event.preventDefault();
+                // Simulate touch cancel for target node
+                var cancelEvent = new cc.Event.EventTouch(event.getTouches(), event.bubbles);
+                cancelEvent.type = cc.Node.EventType.TOUCH_CANCEL;
+                cancelEvent.touch = event.touch;
+                cancelEvent.simulate = true;
+                event.target.dispatchEvent(cancelEvent);
             }
         }
     },
@@ -915,6 +924,8 @@ var ScrollView = cc.Class({
         }
 
         event.stopPropagation();
+        // Reset flag
+        this.node._doPreventDefault = false;
     },
 
     _onTouchEnded: function(event) {

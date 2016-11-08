@@ -104,11 +104,11 @@ cc.Event = function(type, bubbles) {
     this._propagationImmediateStopped = false;
     /**
      * Cancels the event if it is cancelable, without stopping further propagation of the event.
-     * @property _preventDefault
+     * @property _defaultPrevented
      * @type {Boolean}
      * @private
      */
-    this._preventDefault = false;
+    this._defaultPrevented = false;
 };
 cc.Event.prototype = {
     constructor: cc.Event,
@@ -149,7 +149,7 @@ cc.Event.prototype = {
     },
 
     preventDefault: function () {
-        this._preventDefault = true;
+        this._defaultPrevented = true;
     },
 
     /**
