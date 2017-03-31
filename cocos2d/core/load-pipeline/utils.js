@@ -15,12 +15,13 @@ module.exports = {
     //    return urlOrigin !== location.origin;
     //},
     urlAppendTimestamp: function (url) {
-        var key = url.split(cc.AssetLibrary._assetsPrefix)[1];
+        var key = url;
+        if (cc.AssetLibrary._assetsPrefix) {
+            key = url.split(cc.AssetLibrary._assetsPrefix)[1];
+        }
         var realUrl = cc.AssetLibrary._urlMapping[key];
         if (realUrl ) {
             url = cc.AssetLibrary._assetsPrefix + realUrl;
-        } else {
-            console.log(url);
         }
         return url;
     }
