@@ -69,7 +69,11 @@ function loadWebAudio (item, callback) {
     if (!context) return;
 
     var request = cc.loader.getXMLHttpRequest();
-    request.open("GET", item.url, true);
+    var urlAppendTimestamp = require('./utils').urlAppendTimestamp;
+
+    var url = urlAppendTimestamp(item.url);
+
+    request.open("GET", url, true);
     request.responseType = "arraybuffer";
 
     // Our asynchronous callback

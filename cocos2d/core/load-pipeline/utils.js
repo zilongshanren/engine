@@ -1,4 +1,4 @@
-var _noCacheRex = /\?/;
+// var AssetLibrary = require('../platform/CCAssetLibrary.js');
 
 module.exports = {
     //isUrlCrossOrigin: function (url) {
@@ -15,11 +15,13 @@ module.exports = {
     //    return urlOrigin !== location.origin;
     //},
     urlAppendTimestamp: function (url) {
-        if (cc.game.config['noCache'] && typeof url === 'string') {
-            if(_noCacheRex.test(url))
-                url += '&_t=' + (new Date() - 0);
-            else
-                url += '?_t=' + (new Date() - 0);
+        var key = url;
+        if (cc.AssetLibrary._assetsPrefix) {
+            key = url.split(cc.AssetLibrary._assetsPrefix)[1];
+        }
+        var realUrl = cc.AssetLibrary._urlMapping[key];
+        if (realUrl ) {
+            url = cc.AssetLibrary._assetsPrefix + realUrl;
         }
         return url;
     }
