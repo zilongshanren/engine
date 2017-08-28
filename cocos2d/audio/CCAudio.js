@@ -147,7 +147,7 @@ Audio.State = {
         this.emit('play');
         this._state = Audio.State.PLAYING;
 
-        if (this._audioType === Audio.Type.DOM && this._element.paused) {
+        if (!window['wx'] && this._audioType === Audio.Type.DOM && this._element.paused) {
             touchPlayList.push({ instance: this, offset: 0, audio: this._element });
         }
 
@@ -327,7 +327,7 @@ var WebAudioElement = function (buffer, audio) {
             var self = this;
             clearTimeout(this._currextTimer);
             this._currextTimer = setTimeout(function () {
-                if (self._context.currentTime === 0) {
+                if (!window['wx'] && self._context.currentTime === 0) {
                     touchPlayList.push({
                         instance: self._audio,
                         offset: offset,
