@@ -341,6 +341,7 @@ sys.EDITOR_CORE = 103;
  * @default "wechat"
  */
 sys.BROWSER_TYPE_WECHAT = "wechat";
+sys.BROWSER_TYPE_WECHAT_GAME = "wechatgame";
 /**
  *
  * @property {String} BROWSER_TYPE_ANDROID
@@ -550,7 +551,7 @@ else {
         iOS = true;
         osVersion = uaResult[2] || '';
         osMainVersion = parseInt(osVersion) || 0;
-    } 
+    }
     else if (/(iPhone|iPad|iPod)/.exec(nav.platform)) {
         iOS = true;
         osVersion = '';
@@ -598,7 +599,7 @@ else {
         else if (browserType === "safari" && isAndroid)
             browserType = sys.BROWSER_TYPE_ANDROID;
         else if (browserType === "qq" && ua.match(/android.*applewebkit/i))
-            brwoserType = sys.BROWSER_TYPE_ANDROID;
+            browserType = sys.BROWSER_TYPE_ANDROID;
         else if (browserType === "trident")
             browserType = sys.BROWSER_TYPE_IE;
         else if (browserType === "360 aphone")
@@ -608,7 +609,12 @@ else {
         else if (browserType === "opr")
             browserType = sys.BROWSER_TYPE_OPERA;
 
+        if (window['wx']) {
+            browserType = sys.BROWSER_TYPE_WECHAT_GAME;
+        }
+
         sys.browserType = browserType;
+
     })();
 
     /**
