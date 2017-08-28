@@ -25,7 +25,10 @@
 
 cc._tmp = cc._tmp || {};
 cc._LogInfos = cc._LogInfos || {};
-
+cc._isWechatGame = function () {
+    //TODO: need to refactor in the future
+    return window['wx'];
+};
 var _p = window;
 /** @expose */
 _p.gl;

@@ -609,7 +609,7 @@ else {
         else if (browserType === "opr")
             browserType = sys.BROWSER_TYPE_OPERA;
 
-        if (window['wx']) {
+        if (cc._isWechatGame()) {
             browserType = sys.BROWSER_TYPE_WECHAT_GAME;
         }
 
