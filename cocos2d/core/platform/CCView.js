@@ -64,9 +64,11 @@ switch(__BrowserGetter.adaptationType){
     case cc.sys.BROWSER_TYPE_SAFARI:
         __BrowserGetter.meta["minimal-ui"] = "true";
         __BrowserGetter.availWidth = function(frame){
+            if (cc._isWechatGame()) return window.innerWidth;
             return frame.clientWidth;
         };
         __BrowserGetter.availHeight = function(frame){
+            if (cc._isWechatGame()) return window.innerHeight;
             return frame.clientHeight;
         };
         break;
@@ -1071,6 +1073,9 @@ cc.ContainerStrategy = cc._Class.extend(/** @lends cc.ContainerStrategy# */{
     },
 
     _setupContainer: function (view, w, h) {
+        if (cc._isWechatGame()) {
+            return;
+        }
         var locCanvas = cc.game.canvas, locContainer = cc.game.container;
         if (cc.sys.os === cc.sys.OS_ANDROID) {
             document.body.style.width = (view._isRotated ? h : w) + 'px';
@@ -1078,8 +1083,10 @@ cc.ContainerStrategy = cc._Class.extend(/** @lends cc.ContainerStrategy# */{
         }
 
         // Setup style
-        locContainer.style.width = locCanvas.style.width = w + 'px';
-        locContainer.style.height = locCanvas.style.height = h + 'px';
+        if (!cc._isWechatGame()) {
+            locContainer.style.width = locCanvas.style.width = w + 'px';
+            locContainer.style.height = locCanvas.style.height = h + 'px';
+        }
         // Setup pixel ratio for retina display
         var devicePixelRatio = view._devicePixelRatio = 1;
         if (view.isRetinaEnabled())

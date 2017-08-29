@@ -632,15 +632,14 @@ var game = {
         if (!cc._supportRender) {
             throw new Error("The renderer doesn't support the renderMode " + this.config[this.CONFIG_KEY.renderMode]);
         }
-        if (cc._isWechatGame()) {
-            this.frame = window['canvas'];
-            this.canvas = this.frame;
-        } else {
-            var el = this.config[game.CONFIG_KEY.id],
-                win = window,
-                element = cc.$(el) || cc.$('#' + el),
-                localCanvas, localContainer;
 
+        var el = this.config[game.CONFIG_KEY.id], win = window,  localCanvas, localContainer;
+        if (cc._isWechatGame()) {
+            this.container = cc.container = localContainer = document.createElement("DIV");
+            this.frame = localContainer.parentNode === document.body ? document.documentElement : localContainer.parentNode;
+            this.canvas = cc._canvas = localCanvas = window['canvas'];
+        } else {
+            var element = cc.$(el) || cc.$('#' + el);
             if (element.tagName === "CANVAS") {
                 width = width || element.width;
                 height = height || element.height;

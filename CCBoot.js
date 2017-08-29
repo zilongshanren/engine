@@ -133,6 +133,10 @@ function _determineRenderType(config) {
         cc._renderType = cc.game.RENDER_TYPE_WEBGL;
         cc._supportRender = true;
     }
+
+    if (cc._isWechatGame()) {
+        cc._supportRender = true;
+    }
 }
 
 function _getJsListOfModule(moduleMap, moduleName, dir) {
