@@ -26,15 +26,23 @@
 
 var __BrowserGetter = {
     init: function(){
-        this.html = document.getElementsByTagName("html")[0];
+        if (!cc._isWechatGame()) {
+            this.html = document.getElementsByTagName("html")[0];
+        }
     },
     availWidth: function(frame){
+        if (cc._isWechatGame()) {
+            return window.innerWidth;
+        }
         if(!frame || frame === this.html)
             return window.innerWidth;
         else
             return frame.clientWidth;
     },
     availHeight: function(frame){
+        if (cc._isWechatGame()) {
+            return window.innerHeight;
+        }
         if(!frame || frame === this.html)
             return window.innerHeight;
         else
@@ -301,9 +309,9 @@ var View = cc._Class.extend({
 
     /**
      * Sets the orientation of the game, it can be landscape, portrait or auto.
-     * When set it to landscape or portrait, and screen w/h ratio doesn't fit, 
+     * When set it to landscape or portrait, and screen w/h ratio doesn't fit,
      * cc.view will automatically rotate the game canvas using CSS.
-     * Note that this function doesn't have any effect in native, 
+     * Note that this function doesn't have any effect in native,
      * in native, you need to set the application orientation in native project settings
      * @method setOrientation
      * @param {Number} orientation - Possible values: cc.macro.ORIENTATION_LANDSCAPE | cc.macro.ORIENTATION_PORTRAIT | cc.macro.ORIENTATION_AUTO
@@ -325,7 +333,7 @@ var View = cc._Class.extend({
         var isLandscape = w >= h;
 
         if (CC_EDITOR || !cc.sys.isMobile ||
-            (isLandscape && this._orientation & cc.macro.ORIENTATION_LANDSCAPE) || 
+            (isLandscape && this._orientation & cc.macro.ORIENTATION_LANDSCAPE) ||
             (!isLandscape && this._orientation & cc.macro.ORIENTATION_PORTRAIT)) {
             locFrameSize.width = w;
             locFrameSize.height = h;
@@ -395,7 +403,9 @@ var View = cc._Class.extend({
 
     _adjustViewportMeta: function () {
         if (this._isAdjustViewPort) {
-            this._setViewportMeta(__BrowserGetter.meta, false);
+            if (!cc._isWechatGame()) {
+                this._setViewportMeta(__BrowserGetter.meta, false);
+            }
             this._isAdjustViewPort = false;
         }
     },
@@ -504,9 +514,9 @@ var View = cc._Class.extend({
      * @param {Boolean} enabled - Enable or disable auto full screen on mobile devices
      */
     enableAutoFullScreen: function(enabled) {
-        if (enabled && 
-            enabled !== this._autoFullScreen && 
-            cc.sys.isMobile && 
+        if (enabled &&
+            enabled !== this._autoFullScreen &&
+            cc.sys.isMobile &&
             cc.sys.browserType !== cc.sys.BROWSER_TYPE_WECHAT) {
             // Automatically full screen when user touches on mobile version
             this._autoFullScreen = true;
@@ -828,13 +838,15 @@ var View = cc._Class.extend({
      */
     setRealPixelResolution: function (width, height, resolutionPolicy) {
         // Set viewport's width
-        this._setViewportMeta({"width": width}, true);
+        if (!cc._isWechatGame()) {
+            this._setViewportMeta({"width": width}, true);
 
-        // Set body width to the exact pixel resolution
-        document.documentElement.style.width = width + "px";
-        document.body.style.width = width + "px";
-        document.body.style.left = "0px";
-        document.body.style.top = "0px";
+            // Set body width to the exact pixel resolution
+            document.documentElement.style.width = width + "px";
+            document.body.style.width = width + "px";
+            document.body.style.left = "0px";
+            document.body.style.top = "0px";
+        }
 
         // Reset the resolution size and policy
         this.setDesignResolutionSize(width, height, resolutionPolicy);

@@ -97,7 +97,7 @@ var inputManager = /** @lends cc.inputManager# */{
      * @param {Array} touches
      */
     handleTouchesBegin: function (touches) {
-        var selTouch, index, curTouch, touchID, 
+        var selTouch, index, curTouch, touchID,
             handleTouches = [], locTouchIntDict = this._touchesIntegerDict,
             now = cc.sys.now();
         for(var i = 0, len = touches.length; i< len; i ++){
@@ -132,7 +132,7 @@ var inputManager = /** @lends cc.inputManager# */{
      * @param {Array} touches
      */
     handleTouchesMove: function(touches){
-        var selTouch, index, touchID, 
+        var selTouch, index, touchID,
             handleTouches = [], locTouches = this._touches,
             now = cc.sys.now();
         for(var i = 0, len = touches.length; i< len; i ++){
@@ -443,7 +443,9 @@ var inputManager = /** @lends cc.inputManager# */{
 
                 event.stopPropagation();
                 event.preventDefault();
-                element.focus();
+                if (!cc._isWechatGame()) {
+                    element.focus();
+                }
             }, false);
 
             !prohibition && element.addEventListener("mouseup", function (event) {
@@ -540,7 +542,9 @@ var inputManager = /** @lends cc.inputManager# */{
                 selfPointer.handleTouchesBegin(selfPointer.getTouchesByEvent(event, pos));
                 event.stopPropagation();
                 event.preventDefault();
-                element.focus();
+                if (!cc._isWechatGame()) {
+                    element.focus();
+                }
             }, false);
 
             element.addEventListener("touchmove", function (event) {

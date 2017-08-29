@@ -632,40 +632,44 @@ var game = {
         if (!cc._supportRender) {
             throw new Error("The renderer doesn't support the renderMode " + this.config[this.CONFIG_KEY.renderMode]);
         }
-
-        var el = this.config[game.CONFIG_KEY.id],
-            win = window,
-            element = cc.$(el) || cc.$('#' + el),
-            localCanvas, localContainer, localConStyle;
-
-        if (element.tagName === "CANVAS") {
-            width = width || element.width;
-            height = height || element.height;
-
-            //it is already a canvas, we wrap it around with a div
-            this.canvas = cc._canvas = localCanvas = element;
-            this.container = cc.container = localContainer = document.createElement("DIV");
-            if (localCanvas.parentNode)
-                localCanvas.parentNode.insertBefore(localContainer, localCanvas);
+        if (cc._isWechatGame()) {
+            this.frame = window['canvas'];
+            this.canvas = this.frame;
         } else {
-            //we must make a new canvas and place into this element
-            if (element.tagName !== "DIV") {
-                cc.warnID(3819);
-            }
-            width = width || element.clientWidth;
-            height = height || element.clientHeight;
-            this.canvas = cc._canvas = localCanvas = document.createElement("CANVAS");
-            this.container = cc.container = localContainer = document.createElement("DIV");
-            element.appendChild(localContainer);
-        }
-        localContainer.setAttribute('id', 'Cocos2dGameContainer');
-        localContainer.appendChild(localCanvas);
-        this.frame = (localContainer.parentNode === document.body) ? document.documentElement : localContainer.parentNode;
+            var el = this.config[game.CONFIG_KEY.id],
+                win = window,
+                element = cc.$(el) || cc.$('#' + el),
+                localCanvas, localContainer;
 
-        localCanvas.addClass("gameCanvas");
-        localCanvas.setAttribute("width", width || 480);
-        localCanvas.setAttribute("height", height || 320);
-        localCanvas.setAttribute("tabindex", 99);
+            if (element.tagName === "CANVAS") {
+                width = width || element.width;
+                height = height || element.height;
+
+                //it is already a canvas, we wrap it around with a div
+                this.canvas = cc._canvas = localCanvas = element;
+                this.container = cc.container = localContainer = document.createElement("DIV");
+                if (localCanvas.parentNode)
+                    localCanvas.parentNode.insertBefore(localContainer, localCanvas);
+            } else {
+                //we must make a new canvas and place into this element
+                if (element.tagName !== "DIV") {
+                    cc.warnID(3819);
+                }
+                width = width || element.clientWidth;
+                height = height || element.clientHeight;
+                this.canvas = cc._canvas = localCanvas = document.createElement("CANVAS");
+                this.container = cc.container = localContainer = document.createElement("DIV");
+                element.appendChild(localContainer);
+            }
+            localContainer.setAttribute('id', 'Cocos2dGameContainer');
+            localContainer.appendChild(localCanvas);
+            this.frame = (localContainer.parentNode === document.body) ? document.documentElement : localContainer.parentNode;
+
+            localCanvas.addClass("gameCanvas");
+            localCanvas.setAttribute("width", width || 480);
+            localCanvas.setAttribute("height", height || 320);
+            localCanvas.setAttribute("tabindex", 99);
+        }
 
         if (cc._renderType === game.RENDER_TYPE_WEBGL) {
             this._renderContext = cc._renderContext = cc.webglContext

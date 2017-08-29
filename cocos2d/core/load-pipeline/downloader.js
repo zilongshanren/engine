@@ -41,6 +41,11 @@ else {
 }
 
 function downloadScript (item, callback, isAsync) {
+    if (cc._isWechatGame()) {
+        require(item.url);
+        callback(null, url);
+        return;
+    }
     var url = item.url,
         d = document,
         s = document.createElement('script');

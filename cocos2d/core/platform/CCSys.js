@@ -24,7 +24,10 @@
  ****************************************************************************/
 
 if (cc.sys) return;
-
+cc._isWechatGame = function () {
+    //TODO: need to refactor in the future
+    return window['wx'];
+};
 /**
  * System variables
  * @class sys
