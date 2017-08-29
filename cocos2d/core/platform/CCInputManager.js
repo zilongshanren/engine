@@ -222,23 +222,32 @@ var inputManager = /** @lends cc.inputManager# */{
         var docElem = document.documentElement;
         var win = window;
         var box = null;
-        if (typeof element.getBoundingClientRect === 'function') {
-            box = element.getBoundingClientRect();
+        if (cc._isWechatGame()) {
+            box = {
+                left: 0,
+                top: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
         } else {
-            if (element instanceof HTMLCanvasElement) {
-                box = {
-                    left: 0,
-                    top: 0,
-                    width: element.width,
-                    height: element.height
-                };
+            if (typeof element.getBoundingClientRect === 'function') {
+                box = element.getBoundingClientRect();
             } else {
-                box = {
-                    left: 0,
-                    top: 0,
-                    width: parseInt(element.style.width),
-                    height: parseInt(element.style.height)
-                };
+                if (element instanceof HTMLCanvasElement) {
+                    box = {
+                        left: 0,
+                        top: 0,
+                        width: element.width,
+                        height: element.height
+                    };
+                } else {
+                    box = {
+                        left: 0,
+                        top: 0,
+                        width: parseInt(element.style.width),
+                        height: parseInt(element.style.height)
+                    };
+                }
             }
         }
         return {
@@ -338,9 +347,13 @@ var inputManager = /** @lends cc.inputManager# */{
     getPointByEvent: function(event, pos){
         if (event.pageX != null)  //not avalable in <= IE8
             return {x: event.pageX, y: event.pageY};
-
-        pos.left -= document.body.scrollLeft;
-        pos.top -= document.body.scrollTop;
+        if (!cc._isWechatGame()) {
+            pos.left -= document.body.scrollLeft;
+            pos.top -= document.body.scrollTop;
+        } else {
+            pos.left = 0;
+            pos.top = 0;
+        }
         return {x: event.clientX, y: event.clientY};
     },
 
@@ -403,6 +416,12 @@ var inputManager = /** @lends cc.inputManager# */{
         var prohibition = false;
         if( cc.sys.isMobile)
             prohibition = true;
+
+        if (cc._isWechatGame()) {
+            prohibition = false;
+            supportTouches = true;
+            supportMouse = false;
+        }
 
         //register touch event
         if (supportMouse) {
@@ -531,14 +550,23 @@ var inputManager = /** @lends cc.inputManager# */{
             }
         }
 
+        function adjustLeftTopPosition (pos) {
+            if (!cc._isWechatGame()) {
+                pos.left -= document.body.scrollLeft;
+                pos.top -= document.body.scrollTop;
+            } else {
+                pos.left =0;
+                pos.top = 0;
+            }
+        }
+
         if(supportTouches) {
             //register canvas touch event
             element.addEventListener("touchstart", function (event) {
                 if (!event.changedTouches) return;
 
                 var pos = selfPointer.getHTMLElementPosition(element);
-                pos.left -= document.body.scrollLeft;
-                pos.top -= document.body.scrollTop;
+                adjustLeftTopPosition(pos);
                 selfPointer.handleTouchesBegin(selfPointer.getTouchesByEvent(event, pos));
                 event.stopPropagation();
                 event.preventDefault();
@@ -551,8 +579,7 @@ var inputManager = /** @lends cc.inputManager# */{
                 if (!event.changedTouches) return;
 
                 var pos = selfPointer.getHTMLElementPosition(element);
-                pos.left -= document.body.scrollLeft;
-                pos.top -= document.body.scrollTop;
+                adjustLeftTopPosition(pos);
                 selfPointer.handleTouchesMove(selfPointer.getTouchesByEvent(event, pos));
                 event.stopPropagation();
                 event.preventDefault();
@@ -562,8 +589,7 @@ var inputManager = /** @lends cc.inputManager# */{
                 if (!event.changedTouches) return;
 
                 var pos = selfPointer.getHTMLElementPosition(element);
-                pos.left -= document.body.scrollLeft;
-                pos.top -= document.body.scrollTop;
+                adjustLeftTopPosition(pos);
                 selfPointer.handleTouchesEnd(selfPointer.getTouchesByEvent(event, pos));
                 event.stopPropagation();
                 event.preventDefault();
@@ -573,8 +599,7 @@ var inputManager = /** @lends cc.inputManager# */{
                 if (!event.changedTouches) return;
 
                 var pos = selfPointer.getHTMLElementPosition(element);
-                pos.left -= document.body.scrollLeft;
-                pos.top -= document.body.scrollTop;
+                adjustLeftTopPosition(pos);
                 selfPointer.handleTouchesCancel(selfPointer.getTouchesByEvent(event, pos));
                 event.stopPropagation();
                 event.preventDefault();

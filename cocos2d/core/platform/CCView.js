@@ -1073,9 +1073,6 @@ cc.ContainerStrategy = cc._Class.extend(/** @lends cc.ContainerStrategy# */{
     },
 
     _setupContainer: function (view, w, h) {
-        if (cc._isWechatGame()) {
-            return;
-        }
         var locCanvas = cc.game.canvas, locContainer = cc.game.container;
         if (cc.sys.os === cc.sys.OS_ANDROID) {
             document.body.style.width = (view._isRotated ? h : w) + 'px';
