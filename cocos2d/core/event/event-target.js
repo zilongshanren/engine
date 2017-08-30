@@ -261,7 +261,7 @@ JS.mixin(EventTarget.prototype, {
 
     /**
      * !#en Removes all callbacks previously registered with the same target (passed as parameter).
-     * This is not for removing all listeners in the current event target, 
+     * This is not for removing all listeners in the current event target,
      * and this is not for removing all listeners the target parameter have registered.
      * It's only for removing all listeners (callback and target couple) registered on the current event target by the target parameter.
      * !#zh 在当前 EventTarget 上删除指定目标（target 参数）注册的所有事件监听器。

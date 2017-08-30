@@ -35,34 +35,39 @@ var context = __audioSupport.context;
 function loadDomAudio (item, callback) {
     var dom = document.createElement('audio');
     dom.src = item.url;
-    var clearEvent = function () {
-        clearTimeout(timer);
-        dom.removeEventListener("canplaythrough", success, false);
-        dom.removeEventListener("error", failure, false);
-        if(__audioSupport.USE_LOADER_EVENT)
-            dom.removeEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
-    };
-    var timer = setTimeout(function () {
-        if (dom.readyState === 0)
-            failure();
-        else
-            success();
-    }, 8000);
-    var success = function () {
-        clearEvent();
+    if (cc._isWechatGame()) {
         item.element = dom;
         callback(null, item.url);
-    };
-    var failure = function () {
-        clearEvent();
-        var message = 'load audio failure - ' + item.url;
-        cc.log(message);
-        callback(message, item.url);
-    };
-    dom.addEventListener("canplaythrough", success, false);
-    dom.addEventListener("error", failure, false);
-    if(__audioSupport.USE_LOADER_EVENT)
-        dom.addEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
+    } else {
+        var clearEvent = function () {
+            clearTimeout(timer);
+            dom.removeEventListener("canplaythrough", success, false);
+            dom.removeEventListener("error", failure, false);
+            if(__audioSupport.USE_LOADER_EVENT)
+                dom.removeEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
+        };
+        var timer = setTimeout(function () {
+            if (dom.readyState === 0)
+                failure();
+            else
+                success();
+        }, 8000);
+        var success = function () {
+            clearEvent();
+            item.element = dom;
+            callback(null, item.url);
+        };
+        var failure = function () {
+            clearEvent();
+            var message = 'load audio failure - ' + item.url;
+            cc.log(message);
+            callback(message, item.url);
+        };
+        dom.addEventListener("canplaythrough", success, false);
+        dom.addEventListener("error", failure, false);
+        if(__audioSupport.USE_LOADER_EVENT)
+            dom.addEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
+    }
 }
 
 function loadWebAudio (item, callback) {

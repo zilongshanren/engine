@@ -128,7 +128,7 @@ Audio.State = {
     };
 
     proto.mount = function (elem) {
-        if (elem instanceof HTMLElement) {
+        if (cc._isWechatGame() || elem instanceof HTMLElement) {
             this._element = document.createElement('audio');
             this._element.src = elem.src;
             this._audioType = Audio.Type.DOM;
@@ -186,7 +186,7 @@ Audio.State = {
         } catch (error) {}
         this._element.pause();
         // remove touchPlayList
-        for (var i=0; i<touchPlayList; i++) {
+        for (var i=0; i<touchPlayList.length; i++) {
             if (touchPlayList[i].instance === this) {
                 touchPlayList.splice(i, 1);
                 break;
@@ -216,9 +216,12 @@ Audio.State = {
     proto.setCurrentTime = function (num) {
         if (!this._element) return;
         this._unbindEnded();
-        this._bindEnded(function () {
-            this._bindEnded();
-        }.bind(this));
+        if (!cc._isWechatGame()) {
+            //Wechat game will crash
+            this._bindEnded(function () {
+                this._bindEnded();
+            }.bind(this));
+        }
         this._element.currentTime = num;
     };
     proto.getCurrentTime = function () {

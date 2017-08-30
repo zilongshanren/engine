@@ -812,7 +812,7 @@ else {
 
         // check if browser supports Web Audio
         // check Web Audio's context
-        var supportWebAudio = !!(window.AudioContext || window.webkitAudioContext || window.mozAudioContext);
+        var supportWebAudio = !cc._isWechatGame() && !!(window.AudioContext || window.webkitAudioContext || window.mozAudioContext);
 
         __audioSupport = { ONLY_ONE: false, WEB_AUDIO: supportWebAudio, DELAY_CREATE_CTX: false };
 
