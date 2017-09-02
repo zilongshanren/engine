@@ -47,7 +47,7 @@ function loadJSON (item, callback) {
 }
 
 function loadImage (item, callback) {
-    if (!(item.content instanceof Image)) {
+    if (!cc._isWechatGame() && !(item.content instanceof Image)) {
         callback( new Error('Image Loader: Input item doesn\'t contain Image content') );
     }
     var url = item.url;
