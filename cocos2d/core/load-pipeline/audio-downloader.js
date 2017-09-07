@@ -34,7 +34,10 @@ var context = __audioSupport.context;
 
 function loadDomAudio (item, callback) {
     var dom = document.createElement('audio');
-    dom.src = item.url;
+    var urlAppendTimestamp = require('./utils').urlAppendTimestamp;
+    var url = urlAppendTimestamp(item.url);
+    dom.src = url;
+
     if (cc._isWechatGame()) {
         item.element = dom;
         callback(null, item.url);

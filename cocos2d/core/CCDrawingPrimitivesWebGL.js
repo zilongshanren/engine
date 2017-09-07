@@ -47,7 +47,7 @@ cc.DrawingPrimitiveWebGL = cc._Class.extend(/** @lends cc.DrawingPrimitiveWebGL#
         if (ctx == null)
             ctx = cc._renderContext;
 
-        if (!(ctx instanceof  WebGLRenderingContext))
+        if (!cc._isWechatGame() && !(ctx instanceof  WebGLRenderingContext))
             throw new Error("Can't initialise DrawingPrimitiveWebGL. context need is WebGLRenderingContext");
 
         this._renderContext = ctx;

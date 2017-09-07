@@ -771,6 +771,10 @@ else {
         tmpCanvas = null;
     }
 
+    if (cc._isWechatGame()) {
+        _supportWebGL = true;
+    }
+
     /**
      * The capabilities of the current platform
      * @property {Object} capabilities
