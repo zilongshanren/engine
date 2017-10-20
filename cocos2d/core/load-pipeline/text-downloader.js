@@ -44,11 +44,15 @@ else {
                         callback(null, xhr.responseText);
                     }
                     else {
+                        console.error('xhr ready state is wrong: ', xhr.status);
+                        cc.game.emit('xhr-load-error', errInfo);
                         callback({status:xhr.status, errorMessage:errInfo});
                     }
                 }
             };
             xhr.onerror = function(){
+                console.error('xhr onerror called ' + xhr.status + ' Detail: ' + errInfo);
+                cc.game.emit('xhr-load-error', errInfo);
                 callback({status:xhr.status, errorMessage:errInfo});
             };
         }

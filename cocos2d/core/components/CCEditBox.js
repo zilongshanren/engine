@@ -449,6 +449,9 @@ var EditBox = cc.Class({
     },
 
     _createSgNode: function() {
+        if (cc._isWechatGame()) {
+            return null;
+        }
         return new _ccsg.EditBox(cc.size(160, 40));
     },
 
@@ -466,6 +469,9 @@ var EditBox = cc.Class({
     },
 
     _initSgNode: function() {
+        if (cc._isWechatGame()) {
+            return;
+        }
         var sgNode = this._sgNode;
         if(!CC_JSB) {
             sgNode.createDomElementIfNeeded();

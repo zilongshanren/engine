@@ -85,6 +85,7 @@ module.exports = {
         cc.loader.load({ url: packUrl, ignoreMaxConcurrency: true }, function (err, packJson) {
             if (err) {
                 cc.errorID(4916, uuid);
+                console.error('loadNewPack ' + err);
                 return callback(err);
             }
             var res = self._doLoadNewPack(uuid, packUuid, packJson);
