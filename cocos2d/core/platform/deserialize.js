@@ -353,7 +353,7 @@ var _Deserializer = (function () {
     //         self._deserializePrimitiveObject(obj._$erialized, serialized);
     //     }
     // }
-    function compileDeserialize (self, klass) {
+    var compileDeserialize = cc.supportJit ? function (self, klass) {
         var RAW_TYPE = Attr.DELIMETER + 'rawType';
         var EDITOR_ONLY = Attr.DELIMETER + 'editorOnly';
         var SERIALIZABLE = Attr.DELIMETER + 'serializable';
@@ -429,7 +429,69 @@ var _Deserializer = (function () {
         }
         sources.push('})');
         return cleanEval(sources.join(''));
-    }
+    } : function (self, klass) {
+        var RAW_TYPE = Attr.DELIMETER + 'rawType';
+        var EDITOR_ONLY = Attr.DELIMETER + 'editorOnly';
+        var SERIALIZABLE = Attr.DELIMETER + 'serializable';
+        var attrs = Attr.getClassAttrs(klass);
+
+        var props = klass.__props__;
+
+        return function (s,o,d,k,t) {
+            var prop;
+
+            for (var p = 0; p < props.length; p++) {
+                var propName = props[p];
+                var propNameLiteral;
+                var rawType = attrs[propName + RAW_TYPE];
+                if (!rawType) {
+                    if (((CC_EDITOR && self._ignoreEditorOnly) || (!CC_EDITOR && CC_DEV && !CC_TEST))
+                        && attrs[propName + EDITOR_ONLY]) {
+                        var mayUsedInPersistRoot = (propName === '_id' && cc.isChildClassOf(klass, cc.Node));
+                        if (!mayUsedInPersistRoot) {
+                            continue;   // skip editor only if in preview
+                        }
+                    }
+                    if (attrs[propName + SERIALIZABLE] === false) {
+                        continue;   // skip nonSerialized
+                    }
+
+                    prop = d[propName];
+                    if (typeof prop !== "undefined") {
+                        if (typeof prop !== "object") {
+                            o[propName] = prop;
+                        }
+                        else {
+                            if (prop) {
+                                if (CC_EDITOR || CC_TEST) {
+                                    s._deserializeObjField(o,prop,propName,t&&o);
+                                }
+                                else {
+                                    s._deserializeObjField(o, prop, propName);
+                                }
+                            }
+                            else {
+                                o[propName] = null;
+                            }
+                        }
+                    }
+                }
+                else {
+                    // always load raw objects even if property not serialized
+                    // 这里假定每个asset都有uuid，每个json只能包含一个asset，只能包含一个rawProp
+                    if(s.result.rawProp)
+                        cc.error("not support multi raw object in a file");
+                    s.result.rawProp = propName;
+                }
+            }
+            if (props[props.length - 1] === '_$erialized') {
+                // deep copy original serialized data
+                o._$erialized=JSON.parse(JSON.stringify(d));
+                // parse the serialized data as primitive javascript object, so its __id__ will be dereferenced
+                s._deserializePrimitiveObject(o._$erialized,d);
+            }
+        };
+    };
 
     function unlinkUnusedPrefab (self, serialized, obj) {
         var uuid = serialized['asset'] && serialized['asset'].__uuid__;

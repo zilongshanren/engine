@@ -27,21 +27,33 @@
 
 // if "global_defs" not preprocessed by uglify, just declare them globally,
 // this may happened in release version's preview page.
-eval(
-    /* use EVAL to prevent the uglify from renaming symbols */
-    'if(typeof CC_TEST=="undefined")' +
-        'CC_TEST=typeof tap=="object"||typeof QUnit=="object";' +
-    'if(typeof CC_EDITOR=="undefined")' +
-        'CC_EDITOR=typeof Editor=="object"&&typeof process=="object"&&"electron" in process.versions;' +
-    'if(typeof CC_DEV=="undefined")' +
-        'CC_DEV=CC_EDITOR||CC_TEST;' + /* CC_DEV contains CC_TEST and CC_EDITOR */
-    'if(typeof CC_JSB=="undefined")' +
-        'CC_JSB=false;'
-);
+var _global = typeof window === 'undefined' ? global : window;
+function defineMacro (name, defaultValue) {
+    // if "global_defs" not preprocessed by uglify, just declare them globally,
+    // this may happened in release version's preview page.
+    // (use evaled code to prevent mangle by uglify)
+    if (typeof _global[name] == 'undefined') {
+        _global[name] = defaultValue;
+    }
+}
+function defined (name) {
+    return typeof _global[name] == 'object';
+}
+
+defineMacro('CC_TEST', defined('tap') || defined('QUnit'));
+defineMacro('CC_EDITOR', defined('Editor') && defined('process') && ('electron' in process.versions));
+defineMacro('CC_PREVIEW', !CC_EDITOR);
+defineMacro('CC_DEV', true);    // (CC_EDITOR && !CC_BUILD) || CC_PREVIEW || CC_TEST
+defineMacro('CC_DEBUG', true);  // CC_DEV || Debug Build
+defineMacro('CC_JSB', defined('jsb'));
+defineMacro('CC_BUILD', false);
+
 
 // PREDEFINE
 
 require('./predefine');
+
+cc.supportJit = typeof Function('') === 'function';
 
 // LOAD BUNDLED COCOS2D
 

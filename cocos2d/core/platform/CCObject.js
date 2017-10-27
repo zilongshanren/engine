@@ -341,27 +341,40 @@ function compileDestruct (obj, ctor) {
     }
     // compile code
     var skipId = obj instanceof cc._BaseNode || obj instanceof cc.Component;
-    var func = '(function(o){\n';
-    for (key in propsToReset) {
-        if (skipId && key === '_id') {
-            continue;
-        }
-        var statement;
-        if (CCClass.VAR_REG.test(key)) {
-            statement = 'o.' + key + '=';
-        }
-        else {
-            statement = 'o[' + CCClass.escapeForJS(key) + ']=';
-        }
-        var val = propsToReset[key];
-        if (val === '') {
-            val = '""';
-        }
-        func += (statement + val + ';\n');
-    }
-    func += '})';
 
-    return cleanEval(func);
+    if (cc.supportJit) {
+        var func = '(function(o){\n';
+        for (key in propsToReset) {
+            if (skipId && key === '_id') {
+                continue;
+            }
+            var statement;
+            if (CCClass.VAR_REG.test(key)) {
+                statement = 'o.' + key + '=';
+            }
+            else {
+                statement = 'o[' + CCClass.escapeForJS(key) + ']=';
+            }
+            var val = propsToReset[key];
+            if (val === '') {
+                val = '""';
+            }
+            func += (statement + val + ';\n');
+        }
+        func += '})';
+    
+        return cleanEval(func);
+    }
+    else {
+        return function (o) {
+            for (key in propsToReset) {
+                if (skipId && key === '_id') {
+                    continue;
+                }
+                o[key] = propsToReset[key];
+            }
+        };
+    }
 }
 
 /**

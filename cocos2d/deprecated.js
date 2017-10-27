@@ -253,7 +253,7 @@ if (CC_DEV) {
 
     function deprecateEnum (obj, oldPath, newPath, hasTypePrefixBefore) {
         hasTypePrefixBefore = hasTypePrefixBefore !== false;
-        var enumDef = eval(newPath);
+        var enumDef = newPath;
         var entries = cc.Enum.getList(enumDef);
         var delimiter = hasTypePrefixBefore ? '_' : '.';
         for (var i = 0; i < entries.length; i++) {
@@ -273,25 +273,25 @@ if (CC_DEV) {
         }
     }
 
-    deprecateEnum(cc, 'cc.TEXT_ALIGNMENT', 'cc.TextAlignment');
-    deprecateEnum(cc, 'cc.VERTICAL_TEXT_ALIGNMENT', 'cc.VerticalTextAlignment');
+    deprecateEnum(cc, 'cc.TEXT_ALIGNMENT', cc.TextAlignment);
+    deprecateEnum(cc, 'cc.VERTICAL_TEXT_ALIGNMENT', cc.VerticalTextAlignment);
     if (_ccsg.ParticleSystem) {
-        deprecateEnum(_ccsg.ParticleSystem, '_ccsg.ParticleSystem.TYPE', '_ccsg.ParticleSystem.Type');
-        deprecateEnum(_ccsg.ParticleSystem, '_ccsg.ParticleSystem.MODE', '_ccsg.ParticleSystem.Mode');
+        deprecateEnum(_ccsg.ParticleSystem, '_ccsg.ParticleSystem.TYPE', _ccsg.ParticleSystem.Type);
+        deprecateEnum(_ccsg.ParticleSystem, '_ccsg.ParticleSystem.MODE', _ccsg.ParticleSystem.Mode);
     }
     if (cc.ParticleSystem) {
-        deprecateEnum(cc.ParticleSystem, 'cc.ParticleSystem.TYPE', 'cc.ParticleSystem.PositionType');
-        deprecateEnum(cc.ParticleSystem, 'cc.ParticleSystem.MODE', 'cc.ParticleSystem.EmitterMode');
+        deprecateEnum(cc.ParticleSystem, 'cc.ParticleSystem.TYPE', cc.ParticleSystem.PositionType);
+        deprecateEnum(cc.ParticleSystem, 'cc.ParticleSystem.MODE', cc.ParticleSystem.EmitterMode);
     }
     // deprecateEnum(cc.ProgressTimer, 'cc.ProgressTimer.TYPE', 'cc.ProgressTimer.Type');
-    deprecateEnum(cc.game, 'cc.game.DEBUG_MODE', 'cc.DebugMode');
+    deprecateEnum(cc.game, 'cc.game.DEBUG_MODE', cc.DebugMode);
     if (!CC_JSB) {
-        deprecateEnum(cc, 'cc', 'cc.Texture2D.WrapMode', false);
+        deprecateEnum(cc, 'cc', cc.Texture2D.WrapMode, false);
     }
     if (_ccsg.EditBox) {
-        deprecateEnum(cc, 'cc.KEYBOARD_RETURNTYPE', '_ccsg.EditBox.KeyboardReturnType');
-        deprecateEnum(cc, 'cc.EDITBOX_INPUT_MODE', '_ccsg.EditBox.InputMode');
-        deprecateEnum(cc, 'cc.EDITBOX_INPUT_FLAG', '_ccsg.EditBox.InputFlag');
+        deprecateEnum(cc, 'cc.KEYBOARD_RETURNTYPE', _ccsg.EditBox.KeyboardReturnType);
+        deprecateEnum(cc, 'cc.EDITBOX_INPUT_MODE', _ccsg.EditBox.InputMode);
+        deprecateEnum(cc, 'cc.EDITBOX_INPUT_FLAG', _ccsg.EditBox.InputFlag);
     }
 
     function markAsRemoved (ownerCtor, removedProps, ownerName) {
@@ -634,7 +634,7 @@ if (CC_DEV) {
     // SPINE
 
     if (typeof sp !== 'undefined') {
-        deprecateEnum(sp, 'sp.ANIMATION_EVENT_TYPE', 'sp.AnimationEventType');
+        deprecateEnum(sp, 'sp.ANIMATION_EVENT_TYPE', sp.AnimationEventType);
         js.obsolete(sp, 'sp.SkeletonAnimation', 'Skeleton');
         provideClearError(sp.Skeleton, {
             create: 'node.addComponent',

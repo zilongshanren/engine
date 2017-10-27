@@ -76,7 +76,7 @@ Class.extend = function (props) {
 
     // The dummy Class constructor
     var TheClass;
-    if (cc.game && cc.game.config && cc.game.config[cc.game.CONFIG_KEY.exposeClassName]) {
+    if (cc.supportJit && cc.game && cc.game.config && cc.game.config[cc.game.CONFIG_KEY.exposeClassName]) {
         var constructor = "(function " + (props._className || "Class") + " (arg0, arg1, arg2, arg3, arg4) {\n";
         constructor += "    this.__instanceId = ClassManager.getNewInstanceId();\n";
         constructor += "    if (this.ctor) {\n";

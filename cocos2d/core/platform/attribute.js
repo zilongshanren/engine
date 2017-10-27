@@ -28,7 +28,7 @@ var isPlainEmptyObj = require('./utils').isPlainEmptyObj_DEV;
 
 function createAttrsSingle (owner, ownerCtor, superAttrs) {
     var AttrsCtor;
-    if (CC_DEV) {
+    if (CC_DEV && cc.supportJit) {
         var ctorName = ownerCtor.name + '_ATTRS';
         if (owner !== ownerCtor) {
             ctorName += '_INSTANCE';

@@ -391,31 +391,35 @@ function getNewValueTypeCode (value) {
     var clsName = JS.getClassName(value);
     var type = value.constructor;
     var res = 'new ' + clsName + '(';
-    var i;
-    if (type === cc.Mat3 || type === cc.Mat4) {
-        var data = value.data;
-        for (i = 0; i < data.length; i++) {
-            res += data[i];
-            if (i < data.length - 1) {
-                res += ',';
-            }
+    for (var i = 0; i < type.__props__.length; i++) {
+        var prop = type.__props__[i];
+        var propVal = value[prop];
+        if (typeof propVal === 'object') {
+            cc.errorID(3641, clsName);
+            return 'new ' + clsName + '()';
         }
-    }
-    else {
-        for (i = 0; i < type.__props__.length; i++) {
-            var prop = type.__props__[i];
-            var propVal = value[prop];
-            if (typeof propVal === 'object') {
-                cc.errorID(3641, clsName);
-                return 'new ' + clsName + '()';
-            }
-            res += propVal;
-            if (i < type.__props__.length - 1) {
-                res += ',';
-            }
+        res += propVal;
+        if (i < type.__props__.length - 1) {
+            res += ',';
         }
     }
     return res + ')';
+}
+
+function getNewValueType (value) {
+    var clsName = JS.getClassName(value);
+    var type = value.constructor;
+    var res = new type();
+    for (var i = 0; i < type.__props__.length; i++) {
+        var prop = type.__props__[i];
+        var propVal = value[prop];
+        if (typeof propVal === 'object') {
+            cc.errorID(3641, clsName);
+            return res;
+        }
+        res[prop] = propVal;
+    }
+    return res;
 }
 
 // TODO - move escapeForJS, VAR_REG, getNewValueTypeCode to misc.js or a new source file
@@ -429,20 +433,10 @@ function escapeForJS (s) {
         replace(/\u2029/g, '\\u2029');
 }
 
-// simple test variable name
-var VAR_REG = /^[$A-Za-z_][0-9A-Za-z_$]*$/;
-function compileProps (actualClass) {
-    // init deferred properties
-    var attrs = Attr.getClassAttrs(actualClass);
-    var propList = actualClass.__props__;
-    if (propList === null) {
-        deferredInitializer.init();
-        propList = actualClass.__props__;
-    }
-
+function getInitPropsJit (attrs, propList) {
     // functions for generated code
     var F = [];
-    var func = '(function(){\n';
+    var func = '';
 
     for (var i = 0; i < propList.length; i++) {
         var prop = propList[i];
@@ -489,14 +483,85 @@ function compileProps (actualClass) {
         }
     }
 
-    func += '})';
-
     // if (CC_TEST && !isPhantomJS) {
     //     console.log(func);
     // }
 
-    // overwite __initProps__ to avoid compile again
-    actualClass.prototype.__initProps__ = Misc.cleanEval_F(func, F);
+    var initProps;
+    if (F.length === 0) {
+        initProps = Function(func);
+    }
+    else {
+        initProps = Function('F', 'return (function(){\n' + func + '})')(F);
+    }
+
+    return initProps;
+}
+
+function getInitProps (attrs, propList) {
+    // functions for generated code
+
+    function func () {
+        var F = [];
+    
+        for (var i = 0; i < propList.length; i++) {
+            var prop = propList[i];
+            var attrKey = prop + Attr.DELIMETER + 'default';
+            if (attrKey in attrs) {  // getter does not have default
+                var expression;
+                var def = attrs[attrKey];
+                if (typeof def === 'object' && def) {
+                    if (def instanceof cc.ValueType) {
+                        expression = getNewValueType(def);
+                    }
+                    else if (Array.isArray(def)) {
+                        expression = [];
+                    }
+                    else {
+                        expression = {};
+                    }
+                }
+                else if (typeof def === 'function') {
+                    var index = F.length;
+                    F.push(def);
+                    expression = F[index]();
+                    if (CC_EDITOR) {
+                        try {
+                            this[prop] = expression;
+                        }
+                        catch(err) {
+                            cc._throw(e);
+                        }
+                        continue;
+                    }
+                }
+                else {
+                    // number, boolean, null, undefined, string
+                    expression = def;
+                }
+
+                this[prop] = expression;
+            }
+        }
+    }
+    
+    return func;
+}
+
+// simple test variable name
+var VAR_REG = /^[$A-Za-z_][0-9A-Za-z_$]*$/;
+function compileProps (actualClass) {
+    // init deferred properties
+    var attrs = Attr.getClassAttrs(actualClass);
+    var propList = actualClass.__props__;
+    if (propList === null) {
+        deferredInitializer.init();
+        propList = actualClass.__props__;
+    }
+
+    // Overwite __initProps__ to avoid compile again.
+    var initProps = cc.supportJit ? getInitPropsJit(attrs, propList) : getInitProps(attrs, propList);
+    actualClass.prototype.__initProps__ = initProps;
 
     // call instantiateProps immediately, no need to pass actualClass into it anymore
     this.__initProps__();
@@ -569,49 +634,92 @@ function _createCtor (ctor, baseClass, mixins, className, options) {
         ctors.push(ctor);
     }
 
-    // create class constructor
-    var body;
-    var args = CC_JSB ? '...args' : '';
-    if (CC_DEV) {
-        body = '(function ' + normalizeClassName(className) + '(' + args + '){\n';
-    }
-    else {
-        body = '(function(' + args + '){\n';
-    }
-    if (superCallBounded) {
-        body += 'this._super=null;\n';
-    }
-
-    // instantiate props
-    body += 'this.__initProps__(fireClass);\n';
-
-    // call user constructors
-    if (ctors.length > 0) {
-        body += 'var cs=fireClass.__ctors__;\n';
-        var params = CC_JSB ? 'args' : 'arguments';
-
-        if (useTryCatch) {
-            body += 'try{\n';
-        }
-
-        if (ctors.length <= 5) {
-            for (var i = 0; i < ctors.length; i++) {
-                body += '(cs[' + i + ']).apply(this,' + params + ');\n';
-            }
+    var fireClass;
+    if (cc.supportJit) {
+        // create class constructor
+        var body;
+        var args = CC_JSB ? '...args' : '';
+        if (CC_DEV) {
+            body = '(function ' + normalizeClassName(className) + '(' + args + '){\n';
         }
         else {
-            body += 'for(var i=0,l=cs.length;i<l;++i){\n';
-            body += '(cs[i]).apply(this,' + params + ');\n}\n';
+            body = '(function(' + args + '){\n';
+        }
+        if (superCallBounded) {
+            body += 'this._super=null;\n';
         }
 
-        if (useTryCatch) {
-            body += '}catch(e){\ncc._throw(e);\n}\n';
+        // instantiate props
+        body += 'this.__initProps__(fireClass);\n';
+
+        // call user constructors
+        if (ctors.length > 0) {
+            body += 'var cs=fireClass.__ctors__;\n';
+            var params = CC_JSB ? 'args' : 'arguments';
+
+            if (useTryCatch) {
+                body += 'try{\n';
+            }
+
+            if (ctors.length <= 5) {
+                for (var i = 0; i < ctors.length; i++) {
+                    body += '(cs[' + i + ']).apply(this,' + params + ');\n';
+                }
+            }
+            else {
+                body += 'for(var i=0,l=cs.length;i<l;++i){\n';
+                body += '(cs[i]).apply(this,' + params + ');\n}\n';
+            }
+
+            if (useTryCatch) {
+                body += '}catch(e){\ncc._throw(e);\n}\n';
+            }
         }
+        body += '})';
+
+        // jshint evil: true
+        fireClass = Misc.cleanEval_fireClass(body);
     }
-    body += '})';
+    else {
+        fireClass = function () {
+            this._super=null;
 
-    // jshint evil: true
-    var fireClass = Misc.cleanEval_fireClass(body);
+            this.__initProps__(fireClass);
+            
+            // call user constructors
+            var ctorLen = ctors.length;
+            var cs = fireClass.__ctors__;
+            if (ctorLen > 0) {
+                var useTryCatch = ! (className && className.startsWith('cc.'));
+                if (useTryCatch) {
+                    try {
+                        if (ctorLen === 1) {
+                            cs[0].apply(this, arguments);
+                        }
+                        else {
+                            for (var i = 0; i < ctorLen; i++) {
+                                cs[i].apply(this, arguments);;
+                            }
+                        }
+                    }
+                    catch(e) {
+                        cc._throw(e);
+                    }
+                }
+                else {
+                    if (ctorLen === 1) {
+                        cs[0].apply(this, arguments);
+                    }
+                    else {
+                        for (var i = 0; i < ctorLen; i++) {
+                            cs[i].apply(this, arguments);;
+                        }
+                    }
+                }
+            }
+        };
+    }
+    
     // jshint evil: false
 
     Object.defineProperty(fireClass, '__ctors__', {
