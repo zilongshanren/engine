@@ -36,41 +36,78 @@ function loadDomAudio (item, callback) {
     var dom = document.createElement('audio');
     var urlAppendTimestamp = require('./utils').urlAppendTimestamp;
     var url = urlAppendTimestamp(item.url);
-    dom.src = url;
 
     if (cc._isWechatGame()) {
+        var fs = wx.getFileSystemManager();
+        var ccfs = require('./wegame-fs');
+        var assetPrefix = cc.AssetLibrary._assetsPrefix;
+        //只有在cdn的资源才需要在本地缓存，因为我们做了md5
+        //如果是其他资源：比如人物头像等，则不需要缓存
+        if (url.startsWith(assetPrefix)) {
+            var filePath = url.substring(assetPrefix.length);
+            var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+            try {
+                fs.accessSync(localPath);
+                dom.src = localPath;
+            } catch (e) {
+                wx.downloadFile({
+                    url: url,
+                    fail: function (res) {
+                        if (res.errMsg) {
+                            dom.src = url;
+                        }
+                    },
+                    success: function(res) {
+                        dom.src = res.tempFilePath;
+                        fs.readFile({
+                            filePath: res.tempFilePath,
+                            encoding: 'binary',
+                            success: function (res) {
+                                //use async version
+                                ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
+                                    console.log('write file ' + localPath + ' successfully!');
+                                    // fs.unlink({filePath: res.tempFilePath});
+                                });
+                            }
+                        });
+                    }
+                })
+            }
+        } else {
+            dom.src = url;
+        }
+    } else {
+        dom.src = url;
+    }
+
+    var clearEvent = function () {
+        clearTimeout(timer);
+        dom.removeEventListener("canplaythrough", success, false);
+        dom.removeEventListener("error", failure, false);
+        if(__audioSupport.USE_LOADER_EVENT)
+            dom.removeEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
+    };
+    var timer = setTimeout(function () {
+        if (dom.readyState === 0)
+            failure();
+        else
+            success();
+    }, 8000);
+    var success = function () {
+        clearEvent();
         item.element = dom;
         callback(null, item.url);
-    } else {
-        var clearEvent = function () {
-            clearTimeout(timer);
-            dom.removeEventListener("canplaythrough", success, false);
-            dom.removeEventListener("error", failure, false);
-            if(__audioSupport.USE_LOADER_EVENT)
-                dom.removeEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
-        };
-        var timer = setTimeout(function () {
-            if (dom.readyState === 0)
-                failure();
-            else
-                success();
-        }, 8000);
-        var success = function () {
-            clearEvent();
-            item.element = dom;
-            callback(null, item.url);
-        };
-        var failure = function () {
-            clearEvent();
-            var message = 'load audio failure - ' + item.url;
-            cc.log(message);
-            callback(message, item.url);
-        };
-        dom.addEventListener("canplaythrough", success, false);
-        dom.addEventListener("error", failure, false);
-        if(__audioSupport.USE_LOADER_EVENT)
-            dom.addEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
-    }
+    };
+    var failure = function () {
+        clearEvent();
+        var message = 'load audio failure - ' + item.url;
+        cc.log(message);
+        callback(message, item.url);
+    };
+    dom.addEventListener("canplaythrough", success, false);
+    dom.addEventListener("error", failure, false);
+    if(__audioSupport.USE_LOADER_EVENT)
+        dom.addEventListener(__audioSupport.USE_LOADER_EVENT, success, false);
 }
 
 function loadWebAudio (item, callback) {

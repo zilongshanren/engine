@@ -118,7 +118,49 @@ function downloadImage (item, callback, isCrossOrigin, img) {
 
         img.addEventListener('load', loadCallback);
         img.addEventListener('error', errorCallback);
-        img.src = url;
+        if (cc._isWechatGame()) {
+            var fs = wx.getFileSystemManager();
+            var ccfs = require('./wegame-fs');
+            var assetPrefix = cc.AssetLibrary._assetsPrefix;
+            //只有在cdn的资源才需要在本地缓存，因为我们做了md5
+            //如果是其他资源：比如人物头像等，则不需要缓存
+            if (url.startsWith(assetPrefix)) {
+                var filePath = url.substring(assetPrefix.length);
+                var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+                try {
+                    fs.accessSync(localPath);
+                    img.src = localPath;
+                } catch (e) {
+                    wx.downloadFile({
+                        url: url,
+                        fail: function (res) {
+                            if (res.errMsg) {
+                                img.src = url;
+                            }
+                        },
+                        success: function(res) {
+                            img.src = res.tempFilePath;
+                            fs.readFile({
+                                filePath: res.tempFilePath,
+                                encoding: 'binary',
+                                success: function (res) {
+                                    //use async version
+                                    ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
+                                        console.log('write file ' + localPath + ' successfully!');
+                                        // fs.unlink({filePath: res.tempFilePath});
+                                    });
+                                }
+                            });
+                        }
+                    })
+                }
+            } else {
+                img.src = url;
+            }
+
+        } else {
+            img.src = url;
+        }
     }
 }
 
