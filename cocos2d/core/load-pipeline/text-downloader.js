@@ -78,13 +78,13 @@ else {
                         encoding: 'utf8',
                         success: function (res) {
                             if (res.data) {
-                                console.error('read file success')!
+                                // console.error('read file success');
                                 callback(null, res.data);
                             }
                         },
                         fail: function (res) {
                             if (res.errMsg) {
-                                console.error('read file failed')!
+                                console.error('read file failed');
                                 cc.game.emit('xhr-load-error:', res.errMsg);
                                 callback({status:0, errorMessage: res.errMsg});
                             }
@@ -106,7 +106,7 @@ else {
                                 encoding: 'utf8',
                                 success: function (res) {
                                     if (res.data) {
-                                        console.error('download file success');
+                                        // console.error('download file success' + res.data);
                                         callback(null, res.data);
                                     }
                                     //use async version
