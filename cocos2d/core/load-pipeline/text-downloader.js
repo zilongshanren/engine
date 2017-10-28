@@ -63,18 +63,20 @@ else {
         url = urlAppendTimestamp(url);
 
         if (cc._isWechatGame()) {
-            var fs = wx.getFileSystemManager();
             var ccfs = require('./wegame-fs');
+            var fs = ccfs.fs;
             var assetPrefix = cc.AssetLibrary._assetsPrefix;
             //只有在cdn的资源才需要在本地缓存，因为我们做了md5
             //如果是其他资源：比如人物头像等，则不需要缓存
             if (url.startsWith(assetPrefix)) {
                 var filePath = url.substring(assetPrefix.length);
                 var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+                //访问代码包里面的文件
                 try {
-                    fs.accessSync(localPath);
+                    console.log('try load file from local package: txt');
+                    fs.accessSync(filePath);
                     fs.readFile({
-                        filePath: localPath,
+                        filePath: filePath,
                         encoding: 'utf8',
                         success: function (res) {
                             if (res.data) {
@@ -84,40 +86,61 @@ else {
                         },
                         fail: function (res) {
                             if (res.errMsg) {
-                                console.error('read file failed');
+                                console.error('read file path' + filePath + ' failed!');
                                 cc.game.emit('xhr-load-error:', res.errMsg);
                                 callback({status:0, errorMessage: res.errMsg});
                             }
                         }
                     });
                 } catch (e) {
-                    wx.downloadFile({
-                        url: url,
-                        fail: function (res) {
-                            if (res.errMsg) {
-                                cc.game.emit('xhr-load-error:', res.errMsg);
-                                console.error('download file error!');
-                                callback({status:0, errorMessage: res.errMsg});
-                            }
-                        },
-                        success: function(res) {
-                            fs.readFile({
-                                filePath: res.tempFilePath,
-                                encoding: 'utf8',
-                                success: function (res) {
-                                    if (res.data) {
-                                        // console.error('download file success' + res.data);
-                                        callback(null, res.data);
-                                    }
-                                    //use async version
-                                    ccfs.writeFileAsync(localPath, res.data, 'utf8', function () {
-                                        console.log('write file ' + localPath + ' successfully!');
-                                        // fs.unlink({filePath: res.tempFilePath});
-                                    });
+                    try {
+                        fs.accessSync(localPath);
+                        fs.readFile({
+                            filePath: localPath,
+                            encoding: 'utf8',
+                            success: function (res) {
+                                if (res.data) {
+                                    // console.error('read file success');
+                                    callback(null, res.data);
                                 }
-                            });
-                        }
-                    })
+                            },
+                            fail: function (res) {
+                                if (res.errMsg) {
+                                    console.error('read file failed');
+                                    cc.game.emit('xhr-load-error:', res.errMsg);
+                                    callback({status:0, errorMessage: res.errMsg});
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        wx.downloadFile({
+                            url: url,
+                            fail: function (res) {
+                                if (res.errMsg) {
+                                    cc.game.emit('xhr-load-error:', res.errMsg);
+                                    console.error('download file error!');
+                                    callback({status:0, errorMessage: res.errMsg});
+                                }
+                            },
+                            success: function(res) {
+                                fs.readFile({
+                                    filePath: res.tempFilePath,
+                                    encoding: 'utf8',
+                                    success: function (res) {
+                                        if (res.data) {
+                                            // console.error('download file success' + res.data);
+                                            callback(null, res.data);
+                                        }
+                                        //use async version
+                                        ccfs.writeFileAsync(localPath, res.data, 'utf8', function () {
+                                            console.log('write file ' + localPath + ' successfully!');
+                                            // fs.unlink({filePath: res.tempFilePath});
+                                        });
+                                    }
+                                });
+                            }
+                        })
+                    }
                 }
             } else {
                 downloadResFromRemote(url, callback);
