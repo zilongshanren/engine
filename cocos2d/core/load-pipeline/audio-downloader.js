@@ -47,14 +47,16 @@ function loadDomAudio (item, callback) {
             var filePath = url.substring(assetPrefix.length);
             var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
             try {
-                console.log('try load file from local package: audio');
+                console.warn('try load file from local: audio ' + filePath);
                 fs.accessSync(filePath);
                 dom.src = filePath;
             } catch (e) {
                 try {
+                    console.warn('try load file from local: audio ' + localPath);
                     fs.accessSync(localPath);
                     dom.src = localPath;
                 } catch (e) {
+                    console.warn('try download file : audio ' + url);
                     wx.downloadFile({
                         url: url,
                         fail: function (res) {

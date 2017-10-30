@@ -73,7 +73,7 @@ else {
                 var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
                 //访问代码包里面的文件
                 try {
-                    console.log('try load file from local package: txt');
+                    console.warn('try load file from local : txt ' + filePath);
                     fs.accessSync(filePath);
                     fs.readFile({
                         filePath: filePath,
@@ -94,6 +94,7 @@ else {
                     });
                 } catch (e) {
                     try {
+                        console.warn('try load file from local : txt ' + localPath);
                         fs.accessSync(localPath);
                         fs.readFile({
                             filePath: localPath,
@@ -113,6 +114,7 @@ else {
                             }
                         });
                     } catch (e) {
+                        console.warn('try download file : audio ' + url);
                         wx.downloadFile({
                             url: url,
                             fail: function (res) {

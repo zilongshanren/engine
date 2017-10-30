@@ -128,14 +128,16 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                 var filePath = url.substring(assetPrefix.length);
                 var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
                 try {
-                    console.log('try load file from local package: img');
+                    console.warn('try load file from local : img ' + filePath);
                     fs.accessSync(filePath);
                     img.src = filePath;
                 } catch(e) {
                     try {
+                        console.warn('try load file from local : img ' + localPath);
                         fs.accessSync(localPath);
                         img.src = localPath;
                     } catch (e) {
+                        console.warn('try download file : img ' + url);
                         wx.downloadFile({
                             url: url,
                             fail: function (res) {
