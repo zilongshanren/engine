@@ -66,14 +66,22 @@ else {
             var ccfs = require('./wegame-fs');
             var fs = ccfs.fs;
             var assetPrefix = cc.AssetLibrary._assetsPrefix;
+
             //只有在cdn的资源才需要在本地缓存，因为我们做了md5
             //如果是其他资源：比如人物头像等，则不需要缓存
             if (url.startsWith(assetPrefix)) {
                 var filePath = url.substring(assetPrefix.length);
                 var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+
+                if (item.isLoadFromCache && item.complete) {
+                    console.error('Cached file ' + localPath + ' is broken!');
+                    fs.unlink({filePath: localPath, success: function () {
+                        console.warn('unlink ' + localPath + ' successfully!');
+                    }});
+                }
                 //访问代码包里面的文件
                 try {
-                    console.warn('try load file from local : txt ' + filePath);
+                    console.warn('try load file from code : txt ' + filePath);
                     fs.accessSync(filePath);
                     fs.readFile({
                         filePath: filePath,
@@ -103,18 +111,22 @@ else {
                                 if (res.data) {
                                     // console.error('read file success');
                                     callback(null, res.data);
+                                    item.isLoadFromCache = true;
                                 }
                             },
                             fail: function (res) {
                                 if (res.errMsg) {
                                     console.error('read file failed');
+                                    fs.unlink({filePath: localPath, success: function () {
+                                        console.warn('unlink ' + localPath + ' successfully!');
+                                    }});
                                     cc.game.emit('xhr-load-error:', res.errMsg);
                                     callback({status:0, errorMessage: res.errMsg});
                                 }
                             }
                         });
                     } catch (e) {
-                        console.warn('try download file : audio ' + url);
+                        console.warn('try download file : text ' + url);
                         wx.downloadFile({
                             url: url,
                             fail: function (res) {
@@ -130,7 +142,7 @@ else {
                                     encoding: 'utf8',
                                     success: function (res) {
                                         if (res.data) {
-                                            // console.error('download file success' + res.data);
+                                            item.isLoadFromCache = false;
                                             callback(null, res.data);
                                         }
                                         //use async version

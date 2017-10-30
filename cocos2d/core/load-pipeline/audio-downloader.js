@@ -46,8 +46,16 @@ function loadDomAudio (item, callback) {
         if (url.startsWith(assetPrefix)) {
             var filePath = url.substring(assetPrefix.length);
             var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+
+            if (item.isLoadFromCache && item.complete) {
+                console.error('Cached file ' + localPath + ' is broken!');
+                fs.unlink({filePath: localPath, success: function () {
+                    console.warn('unlink ' + localPath + ' successfully!');
+                }});
+            }
+
             try {
-                console.warn('try load file from local: audio ' + filePath);
+                console.warn('try load file from code: audio ' + filePath);
                 fs.accessSync(filePath);
                 dom.src = filePath;
             } catch (e) {
@@ -55,6 +63,7 @@ function loadDomAudio (item, callback) {
                     console.warn('try load file from local: audio ' + localPath);
                     fs.accessSync(localPath);
                     dom.src = localPath;
+                    item.isLoadFromCache = true;
                 } catch (e) {
                     console.warn('try download file : audio ' + url);
                     wx.downloadFile({
@@ -66,6 +75,7 @@ function loadDomAudio (item, callback) {
                         },
                         success: function(res) {
                             dom.src = res.tempFilePath;
+                            item.isLoadFromCache = false;
                             fs.readFile({
                                 filePath: res.tempFilePath,
                                 encoding: 'binary',

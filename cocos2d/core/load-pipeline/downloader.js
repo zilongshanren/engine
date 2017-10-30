@@ -127,8 +127,15 @@ function downloadImage (item, callback, isCrossOrigin, img) {
             if (url.startsWith(assetPrefix)) {
                 var filePath = url.substring(assetPrefix.length);
                 var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+                //the cache content is broken, need to delete the file
+                if (item.isLoadFromCache && item.complete) {
+                    console.error('Cached file ' + localPath + ' is broken!');
+                    fs.unlink({filePath: localPath, success: function () {
+                        console.warn('unlink ' + localPath + ' successfully!');
+                    }});
+                }
                 try {
-                    console.warn('try load file from local : img ' + filePath);
+                    console.warn('try load file from code : img ' + filePath);
                     fs.accessSync(filePath);
                     img.src = filePath;
                 } catch(e) {
@@ -136,6 +143,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                         console.warn('try load file from local : img ' + localPath);
                         fs.accessSync(localPath);
                         img.src = localPath;
+                        item.isLoadFromCache = true;
                     } catch (e) {
                         console.warn('try download file : img ' + url);
                         wx.downloadFile({
@@ -147,6 +155,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                             },
                             success: function(res) {
                                 img.src = res.tempFilePath;
+                                item.isLoadFromCache = false;
                                 fs.readFile({
                                     filePath: res.tempFilePath,
                                     encoding: 'binary',
