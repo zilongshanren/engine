@@ -137,21 +137,25 @@ else {
                                 }
                             },
                             success: function(res) {
-                                fs.readFile({
-                                    filePath: res.tempFilePath,
-                                    encoding: 'utf8',
-                                    success: function (res) {
-                                        if (res.data) {
-                                            item.isLoadFromCache = false;
-                                            callback(null, res.data);
+                                if (res.tempFilePath) {
+                                    fs.readFile({
+                                        filePath: res.tempFilePath,
+                                        encoding: 'utf8',
+                                        success: function (res) {
+                                            if (res.data) {
+                                                item.isLoadFromCache = false;
+                                                callback(null, res.data);
+                                            }
+                                            //use async version
+                                            ccfs.writeFileAsync(localPath, res.data, 'utf8', function () {
+                                                console.log('write file ' + localPath + ' successfully!');
+                                                // fs.unlink({filePath: res.tempFilePath});
+                                            });
                                         }
-                                        //use async version
-                                        ccfs.writeFileAsync(localPath, res.data, 'utf8', function () {
-                                            console.log('write file ' + localPath + ' successfully!');
-                                            // fs.unlink({filePath: res.tempFilePath});
-                                        });
-                                    }
-                                });
+                                    });
+                                } else if (res.statusCode === 404) {
+                                    console.error('The file ' + url + ' is not found on the server!');
+                                }
                             }
                         })
                     }

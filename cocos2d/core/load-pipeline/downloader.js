@@ -154,19 +154,23 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                 }
                             },
                             success: function(res) {
-                                img.src = res.tempFilePath;
-                                item.isLoadFromCache = false;
-                                fs.readFile({
-                                    filePath: res.tempFilePath,
-                                    encoding: 'binary',
-                                    success: function (res) {
-                                        //use async version
-                                        ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
-                                            console.log('write file ' + localPath + ' successfully!');
-                                            // fs.unlink({filePath: res.tempFilePath});
-                                        });
-                                    }
-                                });
+                                if (res.tempFilePath) {
+                                    img.src = res.tempFilePath;
+                                    item.isLoadFromCache = false;
+                                    fs.readFile({
+                                        filePath: res.tempFilePath,
+                                        encoding: 'binary',
+                                        success: function (res) {
+                                            //use async version
+                                            ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
+                                                console.log('write file ' + localPath + ' successfully!');
+                                                // fs.unlink({filePath: res.tempFilePath});
+                                            });
+                                        }
+                                    });
+                                } else if (res.statusCode === 404) {
+                                    console.error('The file ' + url + ' is not found on the server!');
+                                }
                             }
                         })
                     }
