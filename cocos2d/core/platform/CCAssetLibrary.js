@@ -271,6 +271,8 @@ var AssetLibrary = {
         _libraryBase = cc.path._setEndWithSep(libraryPath, '/');
 
         _rawAssetsBase = options.rawAssetsBase;
+        this._rawAssetsBase = _rawAssetsBase;
+        this._libraryBase = _libraryBase;
         if (options.urlMapping) {
             this._urlMapping = options.urlMapping;
         }
@@ -361,6 +363,8 @@ var AssetLibrary = {
 AssetLibrary._uuidToAsset = {};
 AssetLibrary._urlMapping = {};
 AssetLibrary._assetsPrefix = "";
+AssetLibrary._libraryBase = "";
+AssetLibrary._rawAssetsBase = "";
 
 //暂时屏蔽，因为目前没有缓存任何asset
 //if (CC_DEV && Asset.prototype._onPreDestroy) {
