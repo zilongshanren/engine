@@ -80,9 +80,9 @@ else {
                     }});
                 }
                 //访问代码包里面的文件
-                try {
-                    console.warn('try load file from code : txt ' + filePath);
-                    fs.accessSync(filePath);
+                var codeResList = cc.AssetLibrary._codeResList;
+                if (codeResList.indexOf(filePath) > -1) {
+                    console.warn('try load file from code : txt ' + localPath);
                     fs.readFile({
                         filePath: filePath,
                         encoding: 'utf8',
@@ -94,13 +94,15 @@ else {
                         },
                         fail: function (res) {
                             if (res.errMsg) {
-                                console.error('read file path' + filePath + ' failed!');
+                                console.error('read code file path' + filePath + ' failed!');
                                 cc.game.emit('xhr-load-error:', res.errMsg);
+                                //如果读本地代码包内的文件失败，则不使用本地代码包内的缓存文件
+                                codeResList.splice(filePath, 1);
                                 callback({status:0, errorMessage: res.errMsg});
                             }
                         }
                     });
-                } catch (e) {
+                } else {
                     try {
                         console.warn('try load file from local : txt ' + localPath);
                         fs.accessSync(localPath);
@@ -127,45 +129,55 @@ else {
                         });
                     } catch (e) {
                         console.warn('try download file : text ' + url);
-                        wx.downloadFile({
+                        wx.request({
                             url: url,
+                            header: {
+                                'content-type': 'application/json' // 默认值
+                            },
+                            success: function(res) {
+                                if (res.data) {
+                                    item.isLoadFromCache = false;
+                                    if (res.statusCode === 200 || res.statusCode === 0) {
+                                        var data = res.data;
+                                        if (typeof data !== 'string' && !(data instanceof ArrayBuffer)) {
+                                            try {
+                                                data = JSON.stringify(data)
+                                            } catch (e) {
+                                                data = data
+                                            }
+                                        }
+                                        if (data) {
+                                            callback(null, data);
+                                        }
+
+                                        //use async version
+                                        ccfs.writeFileAsync(localPath, data, 'utf8', function () {
+                                            console.log('write file ' + localPath + ' successfully!');
+                                        });
+                                    } else {
+                                        cc.game.emit('xhr-load-error:', res.errMsg);
+                                        console.error('download file error!');
+                                        callback({status:0, errorMessage: res.errMsg});
+                                    }
+                                }
+
+                            },
                             fail: function (res) {
                                 if (res.errMsg) {
                                     cc.game.emit('xhr-load-error:', res.errMsg);
                                     console.error('download file error!');
                                     callback({status:0, errorMessage: res.errMsg});
                                 }
-                            },
-                            success: function(res) {
-                                if (res.tempFilePath) {
-                                    fs.readFile({
-                                        filePath: res.tempFilePath,
-                                        encoding: 'utf8',
-                                        success: function (res) {
-                                            if (res.data) {
-                                                item.isLoadFromCache = false;
-                                                callback(null, res.data);
-                                            }
-                                            //use async version
-                                            ccfs.writeFileAsync(localPath, res.data, 'utf8', function () {
-                                                console.log('write file ' + localPath + ' successfully!');
-                                                // fs.unlink({filePath: res.tempFilePath});
-                                            });
-                                        }
-                                    });
-                                } else if (res.statusCode === 404) {
-                                    console.error('The file ' + url + ' is not found on the server!');
-                                }
                             }
-                        })
+                        });
                     }
                 }
-            } else {
-                downloadResFromRemote(url, callback);
-            }
         } else {
             downloadResFromRemote(url, callback);
         }
+    } else {
+        downloadResFromRemote(url, callback);
+    }
 
-    };
+};
 }

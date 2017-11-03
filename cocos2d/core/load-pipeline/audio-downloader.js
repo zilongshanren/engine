@@ -54,11 +54,11 @@ function loadDomAudio (item, callback) {
                 }});
             }
 
-            try {
+            var codeResList = cc.AssetLibrary._codeResList;
+            if (codeResList.indexOf(filePath) > -1) {
                 console.warn('try load file from code: audio ' + filePath);
-                fs.accessSync(filePath);
                 dom.src = filePath;
-            } catch (e) {
+            } else {
                 try {
                     console.warn('try load file from local: audio ' + localPath);
                     fs.accessSync(localPath);
@@ -94,7 +94,7 @@ function loadDomAudio (item, callback) {
                         }
                     })
                 }
-            }
+            } //codeResList
         } else {
             dom.src = url;
         }

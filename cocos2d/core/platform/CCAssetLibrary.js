@@ -277,6 +277,10 @@ var AssetLibrary = {
             this._urlMapping = options.urlMapping;
         }
 
+        if (options.codeResList) {
+            this._codeResList = options.codeResList;
+        }
+
         if (options.assetsPrefix) {
             this._assetsPrefix = options.assetsPrefix;
         }
@@ -365,6 +369,7 @@ AssetLibrary._urlMapping = {};
 AssetLibrary._assetsPrefix = "";
 AssetLibrary._libraryBase = "";
 AssetLibrary._rawAssetsBase = "";
+AssetLibrary._codeResList = '';
 
 //暂时屏蔽，因为目前没有缓存任何asset
 //if (CC_DEV && Asset.prototype._onPreDestroy) {

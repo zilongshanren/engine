@@ -100,6 +100,35 @@ function downloadImage (item, callback, isCrossOrigin, img) {
             img.removeEventListener('load', loadCallback);
             img.removeEventListener('error', errorCallback);
 
+            //save tempFilePath to wxfile:// path
+            if (cc._isWechatGame() && img._tempFilePath) {
+                cc.FS.mkdirAsyncP(cc.FS.dirname(img._destFilePath), function () {
+                    cc.FS.fs.saveFile({
+                        tempFilePath: img._tempFilePath,
+                        filePath: img._destFilePath,
+                        success: function() {
+                            console.error("save file " + img._destFilePath + " successfully!");
+                        },
+                        fail: function() {
+
+                            console.error("save file " + img._destFilePath + " failed!");
+                        }
+                    });
+                }, function (res) {
+                    cc.FS.fs.saveFile({
+                        tempFilePath: img._tempFilePath,
+                        filePath: img._destFilePath,
+                        success: function() {
+                            console.error("save file " + img._destFilePath + " successfully!");
+                        },
+                        fail: function() {
+
+                            console.error("save file " + img._destFilePath + " failed!");
+                        }
+                    });
+                });
+            }
+
             callback(null, img);
         }
         function errorCallback () {
@@ -134,11 +163,11 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                         console.warn('unlink ' + localPath + ' successfully!');
                     }});
                 }
-                try {
-                    console.warn('try load file from code : img ' + filePath);
-                    fs.accessSync(filePath);
+
+                var codeResList = cc.AssetLibrary._codeResList;
+                if (codeResList.indexOf(filePath) > -1) {
                     img.src = filePath;
-                } catch(e) {
+                } else {
                     try {
                         console.warn('try load file from local : img ' + localPath);
                         fs.accessSync(localPath);
@@ -157,17 +186,9 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                 if (res.tempFilePath) {
                                     img.src = res.tempFilePath;
                                     item.isLoadFromCache = false;
-                                    fs.readFile({
-                                        filePath: res.tempFilePath,
-                                        encoding: 'binary',
-                                        success: function (res) {
-                                            //use async version
-                                            ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
-                                                console.log('write file ' + localPath + ' successfully!');
-                                                // fs.unlink({filePath: res.tempFilePath});
-                                            });
-                                        }
-                                    });
+
+                                    img._tempFilePath = res.tempFilePath;
+                                    img._destFilePath = localPath;
                                 } else if (res.statusCode === 404) {
                                     console.error('The file ' + url + ' is not found on the server!');
                                 }
