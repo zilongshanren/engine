@@ -107,11 +107,10 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                         tempFilePath: img._tempFilePath,
                         filePath: img._destFilePath,
                         success: function() {
-                            console.error("save file " + img._destFilePath + " successfully!");
+                            console.info("save file " + img._destFilePath + " successfully!");
                         },
                         fail: function() {
-
-                            console.error("save file " + img._destFilePath + " failed!");
+                            console.info("save file " + img._destFilePath + " failed!");
                         }
                     });
                 }, function (res) {
@@ -119,11 +118,10 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                         tempFilePath: img._tempFilePath,
                         filePath: img._destFilePath,
                         success: function() {
-                            console.error("save file " + img._destFilePath + " successfully!");
+                            console.info("save file " + img._destFilePath + " successfully!");
                         },
                         fail: function() {
-
-                            console.error("save file " + img._destFilePath + " failed!");
+                            console.info("save file " + img._destFilePath + " failed!");
                         }
                     });
                 });
@@ -166,6 +164,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
 
                 var codeResList = cc.AssetLibrary._codeResList;
                 if (codeResList.indexOf(filePath) > -1) {
+                    console.warn('try load file from code : img ' + localPath);
                     img.src = filePath;
                 } else {
                     try {

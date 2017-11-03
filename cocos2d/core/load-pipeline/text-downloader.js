@@ -152,20 +152,19 @@ else {
 
                                         //use async version
                                         ccfs.writeFileAsync(localPath, data, 'utf8', function () {
-                                            console.log('write file ' + localPath + ' successfully!');
+                                            console.warn('write file ' + localPath + ' successfully!');
                                         });
                                     } else {
                                         cc.game.emit('xhr-load-error:', res.errMsg);
-                                        console.error('download file error!');
+                                        console.error('download file' + url + ' error!');
                                         callback({status:0, errorMessage: res.errMsg});
                                     }
                                 }
-
                             },
                             fail: function (res) {
                                 if (res.errMsg) {
                                     cc.game.emit('xhr-load-error:', res.errMsg);
-                                    console.error('download file error!');
+                                    console.error('download file' + url + ' error!');
                                     callback({status:0, errorMessage: res.errMsg});
                                 }
                             }

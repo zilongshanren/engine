@@ -84,7 +84,6 @@ function loadDomAudio (item, callback) {
                                         //use async version
                                         ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
                                             console.log('write file ' + localPath + ' successfully!');
-                                            // fs.unlink({filePath: res.tempFilePath});
                                         });
                                     }
                                 });
