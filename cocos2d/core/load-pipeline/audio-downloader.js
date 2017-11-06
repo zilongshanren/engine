@@ -56,16 +56,16 @@ function loadDomAudio (item, callback) {
 
             var codeResList = cc.AssetLibrary._codeResList;
             if (codeResList.indexOf(filePath) > -1) {
-                console.warn('try load file from code: audio ' + filePath);
+                // console.warn('try load file from code: audio ' + filePath);
                 dom.src = filePath;
             } else {
                 try {
-                    console.warn('try load file from local: audio ' + localPath);
+                    // console.warn('try load file from local: audio ' + localPath);
                     fs.accessSync(localPath);
                     dom.src = localPath;
                     item.isLoadFromCache = true;
                 } catch (e) {
-                    console.warn('try download file : audio ' + url);
+                    // console.warn('try download file : audio ' + url);
                     wx.downloadFile({
                         url: url,
                         fail: function (res) {

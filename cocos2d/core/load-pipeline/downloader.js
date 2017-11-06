@@ -164,16 +164,16 @@ function downloadImage (item, callback, isCrossOrigin, img) {
 
                 var codeResList = cc.AssetLibrary._codeResList;
                 if (codeResList.indexOf(filePath) > -1) {
-                    console.warn('try load file from code : img ' + localPath);
+                    // console.warn('try load file from code : img ' + localPath);
                     img.src = filePath;
                 } else {
                     try {
-                        console.warn('try load file from local : img ' + localPath);
+                        // console.warn('try load file from local : img ' + localPath);
                         fs.accessSync(localPath);
                         img.src = localPath;
                         item.isLoadFromCache = true;
                     } catch (e) {
-                        console.warn('try download file : img ' + url);
+                        // console.warn('try download file : img ' + url);
                         wx.downloadFile({
                             url: url,
                             fail: function (res) {

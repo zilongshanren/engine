@@ -178,7 +178,7 @@ module.exports = {
         }
         else {
             if (!unpacker) {
-                console.log('Create unpacker %s for %s', packUuid, uuid);
+                // console.log('Create unpacker %s for %s', packUuid, uuid);
                 unpacker = globalUnpackers[packUuid] = new JsonUnpacker();
                 unpacker.state = PackState.Downloading;
             }

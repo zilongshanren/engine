@@ -82,7 +82,7 @@ else {
                 //访问代码包里面的文件
                 var codeResList = cc.AssetLibrary._codeResList;
                 if (codeResList.indexOf(filePath) > -1) {
-                    console.warn('try load file from code : txt ' + localPath);
+                    // console.warn('try load file from code : txt ' + localPath);
                     fs.readFile({
                         filePath: filePath,
                         encoding: 'utf8',
@@ -104,7 +104,7 @@ else {
                     });
                 } else {
                     try {
-                        console.warn('try load file from local : txt ' + localPath);
+                        // console.warn('try load file from local : txt ' + localPath);
                         fs.accessSync(localPath);
                         fs.readFile({
                             filePath: localPath,
@@ -128,7 +128,7 @@ else {
                             }
                         });
                     } catch (e) {
-                        console.warn('try download file : text ' + url);
+                        // console.warn('try download file : text ' + url);
                         wx.request({
                             url: url,
                             header: {
