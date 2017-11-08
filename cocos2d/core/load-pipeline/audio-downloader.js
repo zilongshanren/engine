@@ -47,7 +47,7 @@ function loadDomAudio (item, callback) {
             var filePath = url.substring(assetPrefix.length);
             var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
 
-            if (item.isLoadFromCache && item.complete) {
+            if (item.isLoadFromCache) {
                 console.error('Cached file ' + localPath + ' is broken!');
                 fs.unlink({filePath: localPath, success: function () {
                     console.warn('unlink ' + localPath + ' successfully!');
@@ -77,16 +77,9 @@ function loadDomAudio (item, callback) {
                             if (res.tempFilePath) {
                                 dom.src = res.tempFilePath;
                                 item.isLoadFromCache = false;
-                                fs.readFile({
-                                    filePath: res.tempFilePath,
-                                    encoding: 'binary',
-                                    success: function (res) {
-                                        //use async version
-                                        ccfs.writeFileAsync(localPath, res.data, 'binary', function () {
-                                            console.log('write file ' + localPath + ' successfully!');
-                                        });
-                                    }
-                                });
+
+                                dom._tempFilePath = res.tempFilePath;
+                                dom._destFilePath = localPath;
                             } else if (res.statusCode === 404) {
                                 console.error('The file ' + url + ' is not found on the server!');
                             }
@@ -117,6 +110,14 @@ function loadDomAudio (item, callback) {
     var success = function () {
         clearEvent();
         item.element = dom;
+
+        //持久化
+        //save tempFilePath to wxfile:// path
+        if (cc._isWechatGame()) {
+            var ccfs = require('./wegame-fs');
+            ccfs.persistTempFile(dom);
+        }
+
         callback(null, item.url);
     };
     var failure = function () {

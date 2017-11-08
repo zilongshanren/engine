@@ -101,30 +101,9 @@ function downloadImage (item, callback, isCrossOrigin, img) {
             img.removeEventListener('error', errorCallback);
 
             //save tempFilePath to wxfile:// path
-            if (cc._isWechatGame() && img._tempFilePath) {
-                cc.FS.mkdirAsyncP(cc.FS.dirname(img._destFilePath), function () {
-                    cc.FS.fs.saveFile({
-                        tempFilePath: img._tempFilePath,
-                        filePath: img._destFilePath,
-                        success: function() {
-                            console.info("save file " + img._destFilePath + " successfully!");
-                        },
-                        fail: function() {
-                            console.info("save file " + img._destFilePath + " failed!");
-                        }
-                    });
-                }, function (res) {
-                    cc.FS.fs.saveFile({
-                        tempFilePath: img._tempFilePath,
-                        filePath: img._destFilePath,
-                        success: function() {
-                            console.info("save file " + img._destFilePath + " successfully!");
-                        },
-                        fail: function() {
-                            console.info("save file " + img._destFilePath + " failed!");
-                        }
-                    });
-                });
+            if (cc._isWechatGame()) {
+                var ccfs = require('./wegame-fs');
+                ccfs.persistTempFile(img);
             }
 
             callback(null, img);
@@ -152,49 +131,69 @@ function downloadImage (item, callback, isCrossOrigin, img) {
             //只有在cdn的资源才需要在本地缓存，因为我们做了md5
             //如果是其他资源：比如人物头像等，则不需要缓存
             if (url.startsWith(assetPrefix)) {
+                img._url = url;
                 var filePath = url.substring(assetPrefix.length);
                 var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
                 //the cache content is broken, need to delete the file
-                if (item.isLoadFromCache && item.complete) {
+                if (item.isLoadFromCache) {
                     console.error('Cached file ' + localPath + ' is broken!');
                     fs.unlink({filePath: localPath, success: function () {
                         console.warn('unlink ' + localPath + ' successfully!');
                     }});
-                }
-
-                var codeResList = cc.AssetLibrary._codeResList;
-                if (codeResList.indexOf(filePath) > -1) {
-                    // console.warn('try load file from code : img ' + localPath);
-                    img.src = filePath;
-                } else {
-                    try {
-                        // console.warn('try load file from local : img ' + localPath);
-                        fs.accessSync(localPath);
-                        img.src = localPath;
-                        item.isLoadFromCache = true;
-                    } catch (e) {
-                        // console.warn('try download file : img ' + url);
-                        wx.downloadFile({
-                            url: url,
-                            fail: function (res) {
-                                if (res.errMsg) {
-                                    img.src = url;
-                                }
-                            },
-                            success: function(res) {
-                                if (res.tempFilePath) {
-                                    img.src = res.tempFilePath;
-                                    item.isLoadFromCache = false;
-
-                                    img._tempFilePath = res.tempFilePath;
-                                    img._destFilePath = localPath;
-                                } else if (res.statusCode === 404) {
-                                    console.error('The file ' + url + ' is not found on the server!');
-                                }
+                    wx.downloadFile({
+                        url: url,
+                        fail: function (res) {
+                            if (res.errMsg) {
+                                img.src = url;
                             }
-                        })
-                    }
-                }
+                        },
+                        success: function(res) {
+                            if (res.tempFilePath) {
+                                img.src = res.tempFilePath;
+                                item.isLoadFromCache = false;
+
+                                img._tempFilePath = res.tempFilePath;
+                                img._destFilePath = localPath;
+                            } else if (res.statusCode === 404) {
+                                console.error('The file ' + url + ' is not found on the server!');
+                            }
+                        }
+                    })
+                } else {
+                    var codeResList = cc.AssetLibrary._codeResList;
+                    if (codeResList.indexOf(filePath) > -1) {
+                        // console.warn('try load file from code : img ' + localPath);
+                        img.src = filePath;
+                    } else {
+                        try {
+                            // console.warn('try load file from local : img ' + localPath);
+                            fs.accessSync(localPath);
+                            img.src = localPath;
+                            item.isLoadFromCache = true;
+                        } catch (e) {
+                            // console.warn('try download file : img ' + url);
+                            wx.downloadFile({
+                                url: url,
+                                fail: function (res) {
+                                    if (res.errMsg) {
+                                        img.src = url;
+                                    }
+                                },
+                                success: function(res) {
+                                    if (res.tempFilePath) {
+                                        img.src = res.tempFilePath;
+                                        item.isLoadFromCache = false;
+
+                                        img._tempFilePath = res.tempFilePath;
+                                        img._destFilePath = localPath;
+                                    } else if (res.statusCode === 404) {
+                                        console.error('The file ' + url + ' is not found on the server!');
+                                    }
+                                }
+                            })
+                        }
+                    } //codeResList.indexOf
+                } //if item.isLoadFromCache
             } else {
                 img.src = url;
             }
