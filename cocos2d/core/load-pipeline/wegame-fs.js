@@ -64,35 +64,6 @@ var FS = {
                 })
             }
         });
-    },
-
-    persistTempFile: function (dom) {
-        if (cc._isWechatGame() && dom._tempFilePath) {
-            cc.FS.mkdirAsyncP(cc.FS.dirname(dom._destFilePath), function () {
-                cc.FS.fs.saveFile({
-                    tempFilePath: dom._tempFilePath,
-                    filePath: dom._destFilePath,
-                    success: function() {
-                        console.info("save file " + dom._destFilePath + " successfully!");
-                    },
-                    fail: function() {
-                        console.info("save file " + dom._destFilePath + " failed!");
-                    }
-                });
-            }, function (res) {
-                cc.FS.fs.saveFile({
-                    tempFilePath: dom._tempFilePath,
-                    filePath: dom._destFilePath,
-                    success: function() {
-                        console.info("save file " + dom._destFilePath + " successfully!");
-                    },
-                    fail: function() {
-                        console.info("save file " + dom._destFilePath + " failed!");
-                    }
-                });
-            });
-        }
-
     }
 };
 

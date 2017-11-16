@@ -45,14 +45,7 @@ function loadDomAudio (item, callback) {
         //如果是其他资源：比如人物头像等，则不需要缓存
         if (url.startsWith(assetPrefix)) {
             var filePath = url.substring(assetPrefix.length);
-            var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
-
-            if (item.isLoadFromCache) {
-                console.error('Cached file ' + localPath + ' is broken!');
-                fs.unlink({filePath: localPath, success: function () {
-                    console.warn('unlink ' + localPath + ' successfully!');
-                }});
-            }
+            var localPath = wx.env.USER_DATA_PATH + '/' + ccfs.basename(filePath);
 
             var codeResList = cc.AssetLibrary._codeResList;
             if (codeResList.indexOf(filePath) > -1) {
@@ -64,9 +57,11 @@ function loadDomAudio (item, callback) {
                     fs.accessSync(localPath);
                     dom.src = localPath;
                     item.isLoadFromCache = true;
+                    item.localPath = localPath;
                 } catch (e) {
                     // console.warn('try download file : audio ' + url);
                     wx.downloadFile({
+                        filePath: localPath,
                         url: url,
                         fail: function (res) {
                             if (res.errMsg) {
@@ -74,12 +69,9 @@ function loadDomAudio (item, callback) {
                             }
                         },
                         success: function(res) {
-                            if (res.tempFilePath) {
-                                dom.src = res.tempFilePath;
+                            if (res.tempFilePath || res.filePath) {
+                                dom.src = localPath;
                                 item.isLoadFromCache = false;
-
-                                dom._tempFilePath = res.tempFilePath;
-                                dom._destFilePath = localPath;
                             } else if (res.statusCode === 404) {
                                 console.error('The file ' + url + ' is not found on the server!');
                             }
@@ -111,20 +103,26 @@ function loadDomAudio (item, callback) {
         clearEvent();
         item.element = dom;
 
-        //持久化
-        //save tempFilePath to wxfile:// path
-        if (cc._isWechatGame()) {
-            var ccfs = require('./wegame-fs');
-            ccfs.persistTempFile(dom);
-        }
-
         callback(null, item.url);
     };
     var failure = function () {
         clearEvent();
         var message = 'load audio failure - ' + item.url;
         cc.log(message);
-        callback(message, item.url);
+        if (item.isLoadFromCache && item.localPath) {
+            console.error('Cached file ' + item.localPath + ' is broken!');
+            fs.unlink({
+                filePath: item.localPath,
+                success: function () {
+                    console.warn('unlink ' + item.localPath + ' successfully!');
+                },
+                complete: function () {
+                    callback(message, item.url);
+                }
+            });
+        } else {
+            callback(message, item.url);
+        }
     };
     dom.addEventListener("canplaythrough", success, false);
     dom.addEventListener("error", failure, false);

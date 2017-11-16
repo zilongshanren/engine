@@ -71,7 +71,7 @@ else {
             //如果是其他资源：比如人物头像等，则不需要缓存
             if (url.startsWith(assetPrefix)) {
                 var filePath = url.substring(assetPrefix.length);
-                var localPath = wx.env.USER_DATA_PATH + '/' + filePath;
+                var localPath = wx.env.USER_DATA_PATH + '/' + ccfs.basename(filePath);
 
                 if (item.isLoadFromCache && item.complete) {
                     console.error('Cached file ' + localPath + ' is broken!');
@@ -151,8 +151,13 @@ else {
                                         }
 
                                         //use async version
-                                        ccfs.writeFileAsync(localPath, data, 'utf8', function () {
-                                            console.warn('write file ' + localPath + ' successfully!');
+                                        fs.writeFile({
+                                            filePath: localPath,
+                                            data: data,
+                                            encoding: 'utf8',
+                                            success: function () {
+                                                console.warn('write file ' + localPath + ' successfully!');
+                                            }
                                         });
                                     } else {
                                         cc.game.emit('xhr-load-error:', res.errMsg);
