@@ -76,24 +76,6 @@ Class.extend = function (props) {
 
     // The dummy Class constructor
     var TheClass;
-    if (cc.supportJit && cc.game && cc.game.config && cc.game.config[cc.game.CONFIG_KEY.exposeClassName]) {
-        var constructor = "(function " + (props._className || "Class") + " (arg0, arg1, arg2, arg3, arg4) {\n";
-        constructor += "    this.__instanceId = ClassManager.getNewInstanceId();\n";
-        constructor += "    if (this.ctor) {\n";
-        constructor += "        switch (arguments.length) {\n";
-        constructor += "        case 0: this.ctor(); break;\n";
-        constructor += "        case 1: this.ctor(arg0); break;\n";
-        constructor += "        case 2: this.ctor(arg0, arg1); break;\n";
-        constructor += "        case 3: this.ctor(arg0, arg1, arg2); break;\n";
-        constructor += "        case 4: this.ctor(arg0, arg1, arg2, arg3); break;\n";
-        constructor += "        case 5: this.ctor(arg0, arg1, arg2, arg3, arg4); break;\n";
-        constructor += "        default: this.ctor.apply(this, arguments);\n";
-        constructor += "        }\n";
-        constructor += "    }\n";
-        constructor += "})";
-        TheClass = eval(constructor);
-    }
-    else {
         TheClass = CC_JSB ? function (...args) {
             this.__instanceId = ClassManager.getNewInstanceId();
             if (this.ctor) {
@@ -121,7 +103,6 @@ Class.extend = function (props) {
                 }
             }
         };
-    }
 
     desc.value = ClassManager.getNewID();
     Object.defineProperty(prototype, '__pid', desc);

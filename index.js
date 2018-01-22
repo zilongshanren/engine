@@ -53,7 +53,7 @@ defineMacro('CC_BUILD', false);
 
 require('./predefine');
 
-cc.supportJit = typeof Function('') === 'function';
+cc.supportJit = false; //typeof Function('') === 'function';
 
 // LOAD BUNDLED COCOS2D
 

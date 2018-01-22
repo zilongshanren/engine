@@ -943,57 +943,57 @@ proto.extractRotation = function(){
     return matrix;
 };
 
-proto.extractPlane = function(planeType) {
-    var plane = new cc.math.Plane(), mat = this.mat;
-    switch (planeType) {
-        case cc.math.Plane.RIGHT:
-            plane.a = mat[3] - mat[0];
-            plane.b = mat[7] - mat[4];
-            plane.c = mat[11] - mat[8];
-            plane.d = mat[15] - mat[12];
-            break;
-        case cc.math.Plane.LEFT:
-            plane.a = mat[3] + mat[0];
-            plane.b = mat[7] + mat[4];
-            plane.c = mat[11] + mat[8];
-            plane.d = mat[15] + mat[12];
-            break;
-        case cc.math.Plane.BOTTOM:
-            plane.a = mat[3] + mat[1];
-            plane.b = mat[7] + mat[5];
-            plane.c = mat[11] + mat[9];
-            plane.d = mat[15] + mat[13];
-            break;
-        case cc.math.Plane.TOP:
-            plane.a = mat[3] - mat[1];
-            plane.b = mat[7] - mat[5];
-            plane.c = mat[11] - mat[9];
-            plane.d = mat[15] - mat[13];
-            break;
-        case cc.math.Plane.FAR:
-            plane.a = mat[3] - mat[2];
-            plane.b = mat[7] - mat[6];
-            plane.c = mat[11] - mat[10];
-            plane.d = mat[15] - mat[14];
-            break;
-        case cc.math.Plane.NEAR:
-            plane.a = mat[3] + mat[2];
-            plane.b = mat[7] + mat[6];
-            plane.c = mat[11] + mat[10];
-            plane.d = mat[15] + mat[14];
-            break;
-        default:
-            cc.logID(7904);
-            break;
-    }
+// proto.extractPlane = function(planeType) {
+//     var plane = new cc.math.Plane(), mat = this.mat;
+//     switch (planeType) {
+//         case cc.math.Plane.RIGHT:
+//             plane.a = mat[3] - mat[0];
+//             plane.b = mat[7] - mat[4];
+//             plane.c = mat[11] - mat[8];
+//             plane.d = mat[15] - mat[12];
+//             break;
+//         case cc.math.Plane.LEFT:
+//             plane.a = mat[3] + mat[0];
+//             plane.b = mat[7] + mat[4];
+//             plane.c = mat[11] + mat[8];
+//             plane.d = mat[15] + mat[12];
+//             break;
+//         case cc.math.Plane.BOTTOM:
+//             plane.a = mat[3] + mat[1];
+//             plane.b = mat[7] + mat[5];
+//             plane.c = mat[11] + mat[9];
+//             plane.d = mat[15] + mat[13];
+//             break;
+//         case cc.math.Plane.TOP:
+//             plane.a = mat[3] - mat[1];
+//             plane.b = mat[7] - mat[5];
+//             plane.c = mat[11] - mat[9];
+//             plane.d = mat[15] - mat[13];
+//             break;
+//         case cc.math.Plane.FAR:
+//             plane.a = mat[3] - mat[2];
+//             plane.b = mat[7] - mat[6];
+//             plane.c = mat[11] - mat[10];
+//             plane.d = mat[15] - mat[14];
+//             break;
+//         case cc.math.Plane.NEAR:
+//             plane.a = mat[3] + mat[2];
+//             plane.b = mat[7] + mat[6];
+//             plane.c = mat[11] + mat[10];
+//             plane.d = mat[15] + mat[14];
+//             break;
+//         default:
+//             cc.logID(7904);
+//             break;
+//     }
 
-    var t = Math.sqrt(plane.a * plane.a + plane.b * plane.b + plane.c * plane.c);
-    plane.a /= t;
-    plane.b /= t;
-    plane.c /= t;
-    plane.d /= t;
-    return plane;
-};
+//     var t = Math.sqrt(plane.a * plane.a + plane.b * plane.b + plane.c * plane.c);
+//     plane.a /= t;
+//     plane.b /= t;
+//     plane.c /= t;
+//     plane.d /= t;
+//     return plane;
+// };
 
 /**
  * Take the rotation from a 4x4 transformation matrix, and return it as an axis and an angle (in radians)

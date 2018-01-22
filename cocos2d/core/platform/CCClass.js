@@ -503,7 +503,7 @@ function getInitProps (attrs, propList) {
 
     function func () {
         var F = [];
-    
+
         for (var i = 0; i < propList.length; i++) {
             var prop = propList[i];
             var attrKey = prop + Attr.DELIMETER + 'default';
@@ -544,7 +544,7 @@ function getInitProps (attrs, propList) {
             }
         }
     }
-    
+
     return func;
 }
 
@@ -635,57 +635,11 @@ function _createCtor (ctor, baseClass, mixins, className, options) {
     }
 
     var fireClass;
-    if (cc.supportJit) {
-        // create class constructor
-        var body;
-        var args = CC_JSB ? '...args' : '';
-        if (CC_DEV) {
-            body = '(function ' + normalizeClassName(className) + '(' + args + '){\n';
-        }
-        else {
-            body = '(function(' + args + '){\n';
-        }
-        if (superCallBounded) {
-            body += 'this._super=null;\n';
-        }
-
-        // instantiate props
-        body += 'this.__initProps__(fireClass);\n';
-
-        // call user constructors
-        if (ctors.length > 0) {
-            body += 'var cs=fireClass.__ctors__;\n';
-            var params = CC_JSB ? 'args' : 'arguments';
-
-            if (useTryCatch) {
-                body += 'try{\n';
-            }
-
-            if (ctors.length <= 5) {
-                for (var i = 0; i < ctors.length; i++) {
-                    body += '(cs[' + i + ']).apply(this,' + params + ');\n';
-                }
-            }
-            else {
-                body += 'for(var i=0,l=cs.length;i<l;++i){\n';
-                body += '(cs[i]).apply(this,' + params + ');\n}\n';
-            }
-
-            if (useTryCatch) {
-                body += '}catch(e){\ncc._throw(e);\n}\n';
-            }
-        }
-        body += '})';
-
-        // jshint evil: true
-        fireClass = Misc.cleanEval_fireClass(body);
-    }
-    else {
         fireClass = function () {
             this._super=null;
 
             this.__initProps__(fireClass);
-            
+
             // call user constructors
             var ctorLen = ctors.length;
             var cs = fireClass.__ctors__;
@@ -718,8 +672,7 @@ function _createCtor (ctor, baseClass, mixins, className, options) {
                 }
             }
         };
-    }
-    
+
     // jshint evil: false
 
     Object.defineProperty(fireClass, '__ctors__', {

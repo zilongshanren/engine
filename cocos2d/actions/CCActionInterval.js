@@ -715,7 +715,7 @@ cc.repeatForever = function (action) {
 };
 
 
-/* 
+/*
  * Spawn a new action immediately
  * @class Spawn
  * @extends ActionInterval
@@ -2688,77 +2688,77 @@ cc.animate = function (animation) {
  * @param {Node} target
  * @param {FiniteTimeAction} action
  */
-cc.TargetedAction = cc.ActionInterval.extend({
-    _action:null,
-    _forcedTarget:null,
+// cc.TargetedAction = cc.ActionInterval.extend({
+//     _action:null,
+//     _forcedTarget:null,
 
-    ctor: function (target, action) {
-        cc.ActionInterval.prototype.ctor.call(this);
-		action && this.initWithTarget(target, action);
-    },
+//     ctor: function (target, action) {
+//         cc.ActionInterval.prototype.ctor.call(this);
+// 		action && this.initWithTarget(target, action);
+//     },
 
-    /*
-     * Init an action with the specified action and forced target
-     * @param {Node} target
-     * @param {FiniteTimeAction} action
-     * @return {Boolean}
-     */
-    initWithTarget:function (target, action) {
-        if (this.initWithDuration(action._duration)) {
-            this._forcedTarget = target;
-            this._action = action;
-            return true;
-        }
-        return false;
-    },
+//     /*
+//      * Init an action with the specified action and forced target
+//      * @param {Node} target
+//      * @param {FiniteTimeAction} action
+//      * @return {Boolean}
+//      */
+//     initWithTarget:function (target, action) {
+//         if (this.initWithDuration(action._duration)) {
+//             this._forcedTarget = target;
+//             this._action = action;
+//             return true;
+//         }
+//         return false;
+//     },
 
-    clone:function () {
-        var action = new cc.TargetedAction();
-        this._cloneDecoration(action);
-        action.initWithTarget(this._forcedTarget, this._action.clone());
-        return action;
-    },
+//     clone:function () {
+//         var action = new cc.TargetedAction();
+//         this._cloneDecoration(action);
+//         action.initWithTarget(this._forcedTarget, this._action.clone());
+//         return action;
+//     },
 
-    startWithTarget:function (target) {
-        cc.ActionInterval.prototype.startWithTarget.call(this, target);
-        this._action.startWithTarget(this._forcedTarget);
-    },
+//     startWithTarget:function (target) {
+//         cc.ActionInterval.prototype.startWithTarget.call(this, target);
+//         this._action.startWithTarget(this._forcedTarget);
+//     },
 
-    stop:function () {
-        this._action.stop();
-    },
+//     stop:function () {
+//         this._action.stop();
+//     },
 
-    update:function (dt) {
-        dt = this._computeEaseTime(dt);
-        this._action.update(dt);
-    },
+//     update:function (dt) {
+//         dt = this._computeEaseTime(dt);
+//         this._action.update(dt);
+//     },
 
-    /*
-     * return the target that the action will be forced to run with
-     * @return {Node}
-     */
-    getForcedTarget:function () {
-        return this._forcedTarget;
-    },
+//     /*
+//      * return the target that the action will be forced to run with
+//      * @return {Node}
+//      */
+//     getForcedTarget:function () {
+//         return this._forcedTarget;
+//     },
 
-    /*
-     * set the target that the action will be forced to run with
-     * @param {Node} forcedTarget
-     */
-    setForcedTarget:function (forcedTarget) {
-        if (this._forcedTarget !== forcedTarget)
-            this._forcedTarget = forcedTarget;
-    }
-});
+//     /*
+//      * set the target that the action will be forced to run with
+//      * @param {Node} forcedTarget
+//      */
+//     setForcedTarget:function (forcedTarget) {
+//         if (this._forcedTarget !== forcedTarget)
+//             this._forcedTarget = forcedTarget;
+//     }
+// });
 
-/**
- * !#en Create an action with the specified action and forced target.
- * !#zh 用已有动作和一个新的目标节点创建动作。
- * @method targetedAction
- * @param {Node} target
- * @param {FiniteTimeAction} action
- * @return {ActionInterval}
- */
-cc.targetedAction = function (target, action) {
-    return new cc.TargetedAction(target, action);
-};
+// /**
+//  * !#en Create an action with the specified action and forced target.
+//  * !#zh 用已有动作和一个新的目标节点创建动作。
+//  * @method targetedAction
+//  * @param {Node} target
+//  * @param {FiniteTimeAction} action
+//  * @return {ActionInterval}
+//  */
+// cc.targetedAction = function (target, action) {
+//     return new cc.TargetedAction(target, action);
+// };

@@ -41,17 +41,17 @@ var modules = {
         './cocos2d/core/base-nodes/CCSGNodeWebGLRenderCmd.js',
         './cocos2d/core/scenes/CCSGScene.js',
         './cocos2d/core/CCConfiguration.js',
-        './cocos2d/core/CCDrawingPrimitivesCanvas.js',
+        // './cocos2d/core/CCDrawingPrimitivesCanvas.js',
         './cocos2d/core/CCDrawingPrimitivesWebGL.js'
     ],
 
     'Sprite': [
         './cocos2d/core/sprites/SpritesPropertyDefine.js',
         './cocos2d/core/sprites/CCSGSprite.js',
-        './cocos2d/core/sprites/CCSGSpriteCanvasRenderCmd.js',
+        // './cocos2d/core/sprites/CCSGSpriteCanvasRenderCmd.js',
         './cocos2d/core/sprites/CCSGSpriteWebGLRenderCmd.js',
         './cocos2d/core/sprites/CCScale9Sprite.js',
-        './cocos2d/core/sprites/CCScale9SpriteCanvasRenderCmd.js',
+        // './cocos2d/core/sprites/CCScale9SpriteCanvasRenderCmd.js',
         './cocos2d/core/sprites/CCScale9SpriteWebGLRenderCmd.js',
         './cocos2d/core/sprites/CCSpriteBatchNode.js'
     ],
@@ -65,10 +65,10 @@ var modules = {
 
     'Mask': [
         './cocos2d/shape-nodes/CCDrawNode.js',
-        './cocos2d/shape-nodes/CCDrawNodeCanvasRenderCmd.js',
+        // './cocos2d/shape-nodes/CCDrawNodeCanvasRenderCmd.js',
         './cocos2d/shape-nodes/CCDrawNodeWebGLRenderCmd.js',
         './cocos2d/clipping-nodes/CCClippingNode.js',
-        './cocos2d/clipping-nodes/CCClippingNodeCanvasRenderCmd.js',
+        // './cocos2d/clipping-nodes/CCClippingNodeCanvasRenderCmd.js',
         './cocos2d/clipping-nodes/CCClippingNodeWebGLRenderCmd.js'
     ],
 
@@ -104,8 +104,8 @@ var modules = {
     ],
 
     'MotionStreak': [
-        './cocos2d/motion-streak/CCSGMotionStreak.js',
-        './cocos2d/motion-streak/CCSGMotionStreakWebGLRenderCmd.js',
+        // './cocos2d/motion-streak/CCSGMotionStreak.js',
+        // './cocos2d/motion-streak/CCSGMotionStreakWebGLRenderCmd.js',
         './cocos2d/render-texture/CCRenderTexture.js',
         './cocos2d/render-texture/CCRenderTextureCanvasRenderCmd.js',
         './cocos2d/render-texture/CCRenderTextureWebGLRenderCmd.js'

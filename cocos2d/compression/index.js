@@ -23,7 +23,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-require('./ZipUtils');
-require('./base64');
-require('./gzip');
-require('./zlib.min');
+// require('./ZipUtils');
+// require('./base64');
+// require('./gzip');
+// require('./zlib.min');

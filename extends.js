@@ -35,7 +35,7 @@ if (!(CC_EDITOR && Editor.isMainProcess)) {
     require('./cocos2d/motion-streak/CCMotionStreak');
 }
 
-require('./cocos2d/tilemap/CCTiledMapAsset');
+// require('./cocos2d/tilemap/CCTiledMapAsset');
 if (!(CC_EDITOR && Editor.isMainProcess) && !cc.runtime) {
     require('./cocos2d/tilemap/CCTiledMap');
     require('./cocos2d/tilemap/CCTiledLayer');
@@ -55,13 +55,13 @@ if (!cc.runtime) {
 if (!(CC_EDITOR && Editor.isMainProcess)) {
     if (!CC_JSB) {
         require('./cocos2d/actions');
-        require('./external/chipmunk/chipmunk.js');
+        // require('./external/chipmunk/chipmunk.js');
     }
-    
+
     require('./extensions/ccpool/CCNodePool.js');
     require('./extensions/ccpool/CCPool.js');
 }
 
 if (!CC_EDITOR || !Editor.isMainProcess) {
-    require('./cocos2d/deprecated');
+    // require('./cocos2d/deprecated');
 }
