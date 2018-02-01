@@ -42,48 +42,56 @@ EventListeners.prototype.invoke = function (event, captureListeners) {
 
     this._invoking[key] = true;
 
-    if (list) {
-        if (list.length === 1) {
-            callingFunc = list[0];
-            if (callingFunc !== REMOVE_PLACEHOLDER) {
-                callingFunc.call(event.currentTarget, event, captureListeners);
-            }
-        }
-        else {
-            endIndex = list.length - 1;
-            if (key === cc.Director.EVENT_COMPONENT_UPDATE) {
-                var dt = event.detail;
-                for (i = 1; i <= endIndex; i += 2) {
-                    target = list[i];
-                    if (target !== REMOVE_PLACEHOLDER) {
-                        target.update(dt);
-                    }
+    try {
+        if (list) {
+            if (list.length === 1) {
+                callingFunc = list[0];
+                if (callingFunc !== REMOVE_PLACEHOLDER) {
+                    callingFunc.call(event.currentTarget, event, captureListeners);
                 }
             }
             else {
-                for (i = 0; i <= endIndex;) {
-                    callingFunc = list[i];
-                    var increment = 1;
-                    // cheap detection for function
-                    if (callingFunc !== REMOVE_PLACEHOLDER) {
-                        target = list[i+1];
-                        hasTarget = target && typeof target === 'object';
-                        if (hasTarget) {
-                            callingFunc.call(target, event, captureListeners);
-                            increment = 2;
-                        }
-                        else {
-                            callingFunc.call(event.currentTarget, event, captureListeners);
-                        }
-
-                        if (event._propagationImmediateStopped || i + increment > endIndex) {
-                            break;
+                endIndex = list.length - 1;
+                if (key === cc.Director.EVENT_COMPONENT_UPDATE) {
+                    var dt = event.detail;
+                    for (i = 1; i <= endIndex; i += 2) {
+                        target = list[i];
+                        if (target !== REMOVE_PLACEHOLDER) {
+                            target.update(dt);
                         }
                     }
+                }
+                else {
+                    for (i = 0; i <= endIndex;) {
+                        callingFunc = list[i];
+                        var increment = 1;
+                        // cheap detection for function
+                        if (callingFunc !== REMOVE_PLACEHOLDER) {
+                            target = list[i+1];
+                            hasTarget = target && typeof target === 'object';
+                            if (hasTarget) {
+                                callingFunc.call(target, event, captureListeners);
+                                increment = 2;
+                            }
+                            else {
+                                callingFunc.call(event.currentTarget, event, captureListeners);
+                            }
 
-                    i += increment;
+                            if (event._propagationImmediateStopped || i + increment > endIndex) {
+                                break;
+                            }
+                        }
+
+                        i += increment;
+                    }
                 }
             }
+        }
+    } catch (e) {
+        if (Log && Log.Error) {
+            Log.Error(e.message);
+        } else {
+            console.error(e.message);
         }
     }
     this._invoking[key] = false;
