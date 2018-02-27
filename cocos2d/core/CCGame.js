@@ -35,12 +35,17 @@ require('../audio/CCAudioEngine');
  * !#en An object to boot the game.
  * !#zh 包含游戏主体信息并负责驱动游戏的游戏对象。
  * @class Game
+ * @extends EventTarget
  */
 var game = {
 
     /**
-     * Event triggered when game hide to background.
-     * Please note that this event is not 100% guaranteed to be fired.
+     * !#en Event triggered when game hide to background.
+     * Please note that this event is not 100% guaranteed to be fired on Web platform,
+     * on native platforms, it corresponds to enter background event, os status bar or notification center may not trigger this event.
+     * !#zh 游戏进入后台时触发的事件。
+     * 请注意，在 WEB 平台，这个事件不一定会 100% 触发，这完全取决于浏览器的回调行为。
+     * 在原生平台，它对应的是应用被切换到后台事件，下拉菜单和上拉状态栏等不一定会触发这个事件，这取决于系统行为。
      * @property EVENT_HIDE
      * @type {String}
      * @example
@@ -53,7 +58,11 @@ var game = {
 
     /**
      * Event triggered when game back to foreground
-     * Please note that this event is not 100% guaranteed to be fired.
+     * Please note that this event is not 100% guaranteed to be fired on Web platform,
+     * on native platforms, it corresponds to enter foreground event.
+     * !#zh 游戏进入前台运行时触发的事件。
+     * 请注意，在 WEB 平台，这个事件不一定会 100% 触发，这完全取决于浏览器的回调行为。
+     * 在原生平台，它对应的是应用被切换到前台事件。
      * @property EVENT_SHOW
      * @type {String}
      */
@@ -129,14 +138,14 @@ var game = {
      * !#en The container of game canvas, equals to cc.container.
      * !#zh 游戏画布的容器。
      * @property container
-     * @type {Object}
+     * @type {HTMLDivElement}
      */
     container: null,
     /**
      * !#en The canvas of the game, equals to cc._canvas.
      * !#zh 游戏的画布。
      * @property canvas
-     * @type {Object}
+     * @type {HTMLCanvasElement}
      */
     canvas: null,
 
@@ -223,7 +232,7 @@ var game = {
         var self = this, config = self.config, CONFIG_KEY = self.CONFIG_KEY;
         config[CONFIG_KEY.frameRate] = frameRate;
         if (self._intervalId)
-            window.cancelAnimationFrame(self._intervalId);
+            window.cancelAnimFrame(self._intervalId);
         self._intervalId = 0;
         self._paused = true;
         self._setAnimFrame();
@@ -255,7 +264,7 @@ var game = {
         }
         // Pause main loop
         if (this._intervalId)
-            window.cancelAnimationFrame(this._intervalId);
+            window.cancelAnimFrame(this._intervalId);
         this._intervalId = 0;
     },
 
@@ -507,7 +516,7 @@ var game = {
         this._frameTime = 1000 / frameRate;
         if (frameRate !== 60 && frameRate !== 30) {
             window.requestAnimFrame = this._stTime;
-            window.cancelAnimationFrame = this._ctTime;
+            window.cancelAnimFrame = this._ctTime;
         }
         else {
             window.requestAnimFrame = window.requestAnimationFrame ||
@@ -516,7 +525,7 @@ var game = {
             window.oRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
             this._stTime;
-            window.cancelAnimationFrame = window.cancelAnimationFrame ||
+            window.cancelAnimFrame = window.cancelAnimationFrame ||
             window.cancelRequestAnimationFrame ||
             window.msCancelRequestAnimationFrame ||
             window.mozCancelRequestAnimationFrame ||
@@ -550,15 +559,13 @@ var game = {
 
         callback = function () {
             if (!self._paused) {
+                self._intervalId = window.requestAnimFrame(callback);
                 if (frameRate === 30) {
                     if (skip = !skip) {
-                        self._intervalId = window.requestAnimFrame(callback);
                         return;
                     }
                 }
-
                 director.mainLoop();
-                self._intervalId = window.requestAnimFrame(callback);
             }
         };
 
