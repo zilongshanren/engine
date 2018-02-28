@@ -426,6 +426,7 @@ var audioEngine = {
             var audio = id2audio[id];
             if (audio) {
                 audio.stop();
+                // FIXME: loader里面也需要删除
                 audio.destroy();
                 delete id2audio[id];
             }
@@ -444,6 +445,7 @@ var audioEngine = {
         for (var id in id2audio) {
             var audio = id2audio[id];
             if (audio) {
+                // FIXME: loader里面也需要删除
                 audio.destroy();
             }
         }

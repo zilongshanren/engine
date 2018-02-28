@@ -139,9 +139,13 @@ Audio.State = {
     };
 
     proto.mount = function (elem) {
-        if (sys.platform === sys.WECHAT_GAME || elem instanceof HTMLElement) {
-            this._element = document.createElement('audio');
-            this._element.src = elem.src;
+        if (elem instanceof HTMLElement) {
+            if (cc._isWechatGame()) {
+                this._element = elem;
+            } else {
+                this._element = document.createElement('audio');
+                this._element.src = elem.src;
+            }
             this._audioType = Audio.Type.DOM;
         } else {
             this._element = new WebAudioElement(elem, this);
@@ -158,8 +162,8 @@ Audio.State = {
         this.emit('play');
         this._state = Audio.State.PLAYING;
 
-        if (sys.platform !== sys.WECHAT_GAME && 
-            this._audioType === Audio.Type.DOM && 
+        if (!cc._isWechatGame() &&
+            this._audioType === Audio.Type.DOM &&
             this._element.paused) {
             touchPlayList.push({ instance: this, offset: 0, audio: this._element });
         }
@@ -177,7 +181,7 @@ Audio.State = {
     };
 
     proto.destroy = function () {
-        if (CC_WECHATGAME) {
+        if (cc._isWechatGame()) {
             this._element.destroy();
         }
     };
@@ -235,7 +239,7 @@ Audio.State = {
     proto.setCurrentTime = function (num) {
         if (!this._element) return;
         this._unbindEnded();
-        if (sys.platform !== sys.WECHAT_GAME) {
+        if (!cc._isWechatGame()) {
             this._bindEnded(function () {
                 this._bindEnded();
             }.bind(this));
@@ -367,7 +371,7 @@ var WebAudioElement = function (buffer, audio) {
             var self = this;
             clearTimeout(this._currextTimer);
             this._currextTimer = setTimeout(function () {
-                if (sys.platform !== sys.WECHAT_GAME && self._context.currentTime === 0) {
+                if (!cc._isWechatGame() && self._context.currentTime === 0) {
                     touchPlayList.push({
                         instance: self._audio,
                         offset: offset,
