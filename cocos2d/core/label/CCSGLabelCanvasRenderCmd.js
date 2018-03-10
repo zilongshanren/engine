@@ -45,9 +45,9 @@
             this._notifyRegionStatus && this._notifyRegionStatus(_ccsg.Node.CanvasRenderCmd.RegionStatus.Dirty);
         }
 
-        if(locFlag & dirtyFlags.contentDirty) {
+        if(locFlag & flags.contentDirty) {
             this._notifyRegionStatus && this._notifyRegionStatus(_ccsg.Node.CanvasRenderCmd.RegionStatus.Dirty);
-            this._dirtyFlag &= ~dirtyFlags.contentDirty;
+            this._dirtyFlag &= ~flags.contentDirty;
         }
 
         if (colorDirty || (locFlag & flags.textDirty)) {
