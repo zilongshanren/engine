@@ -262,6 +262,7 @@ var Texture2D = cc.Class(/** @lends cc.Texture2D# */{
     releaseTexture: function () {
         if (this._webTextureObj) {
             cc._renderContext.deleteTexture(this._webTextureObj);
+            this._webTextureObj = null;
         }
     },
 
@@ -848,6 +849,10 @@ game.once(game.EVENT_RENDERER_INITED, function () {
                 //upload image to buffer
                 var gl = cc._renderContext;
 
+                if (!self._webTextureObj) {
+                    self._webTextureObj = gl.createTexture();
+                }
+
                 cc.gl.bindTexture2D(self);
 
                 gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
@@ -886,6 +891,7 @@ game.once(game.EVENT_RENDERER_INITED, function () {
 
                 //dispatch load event to listener.
                 self.emit("load");
+                self._htmlElementObj.src = '';
             },
 
             setTexParameters: function (texParams, magFilter, wrapS, wrapT) {
