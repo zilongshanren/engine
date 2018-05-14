@@ -236,6 +236,7 @@ _ccsg.Label = _ccsg.Node.extend({
         this._super();
 
         this._renderCmd._texture.releaseTexture();
+        this._notifyLabelSkinDirty();
     },
 
     //fontHandle it is a system font name, ttf file path or bmfont file path.
