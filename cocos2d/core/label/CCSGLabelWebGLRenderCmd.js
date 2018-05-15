@@ -84,18 +84,8 @@ proto.transform = function (parentCmd, recursive) {
         return;
     }
 
-    var rect = cc.visibleRect,
-        vl = rect.left.x, vr = rect.right.x, vt = rect.top.y, vb = rect.bottom.y;
-    if (((vert[0].x-vl) & (vert[1].x-vl) & (vert[2].x-vl) & (vert[3].x-vl)) >> 31 || // All outside left
-        ((vr-vert[0].x) & (vr-vert[1].x) & (vr-vert[2].x) & (vr-vert[3].x)) >> 31 || // All outside right
-        ((vert[0].y-vb) & (vert[1].y-vb) & (vert[2].y-vb) & (vert[3].y-vb)) >> 31 || // All outside bottom
-        ((vt-vert[0].y) & (vt-vert[1].y) & (vt-vert[2].y) & (vt-vert[3].y)) >> 31)   // All outside top
-    {
-        this._needDraw = false;
-    }
-    else {
-        this._needDraw = true;
-    }
+    //disable culling
+    this._needDraw = true;
 };
 
 proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {

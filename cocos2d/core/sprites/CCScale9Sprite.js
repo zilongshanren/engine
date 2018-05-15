@@ -117,7 +117,7 @@ var simpleQuadGenerator = {
         // bl, br, tl, tr
         if (webgl) {
             var la = l * wt.a, lb = l * wt.b, ra = r * wt.a, rb = r * wt.b,
-                tcx = t * wt.c + wt.tx, tdy = t * wt.d + wt.ty, 
+                tcx = t * wt.c + wt.tx, tdy = t * wt.d + wt.ty,
                 bcx = b * wt.c + wt.tx, bdy = b * wt.d + wt.ty;
             vertices[0] = la + bcx;
             vertices[1] = lb + bdy;
@@ -395,7 +395,7 @@ var tiledQuadGenerator = {
                 // bl.x, bl.y, br.x, br.y, tl.x, tl.y, tr.x, tr.y
                 if (webgl) {
                     var la = l * wt.a, lb = l * wt.b, ra = r * wt.a, rb = r * wt.b,
-                        tcx = t * wt.c + wt.tx, tdy = t * wt.d + wt.ty, 
+                        tcx = t * wt.c + wt.tx, tdy = t * wt.d + wt.ty,
                         bcx = b * wt.c + wt.tx, bdy = b * wt.d + wt.ty;
                     vertices[offset] = la + bcx;
                     vertices[offset + 1] = lb + bdy;
@@ -556,7 +556,7 @@ var fillQuadGeneratorBar = {
         //build vertices
         if (webgl) {
             var la = l * wt.a, lb = l * wt.b, ra = r * wt.a, rb = r * wt.b,
-                tcx = t * wt.c + wt.tx, tdy = t * wt.d + wt.ty, 
+                tcx = t * wt.c + wt.tx, tdy = t * wt.d + wt.ty,
                 bcx = b * wt.c + wt.tx, bdy = b * wt.d + wt.ty;
             vertices[0] = la + bcx;
             vertices[1] = lb + bdy;
@@ -1407,36 +1407,8 @@ cc.Scale9Sprite = _ccsg.Node.extend({
             return;
         }
 
-        // Culling
-        if (webgl) {
-            // x1, y1  leftBottom
-            // x2, y2  rightBottom
-            // x3, y3  leftTop
-            // x4, y4  rightTop
-            var vert = this._isTriangle ? this._rawVerts : this._vertices,
-                x0 = vert[cornerId[0]], x1 = vert[cornerId[1]], x2 = vert[cornerId[2]], x3 = vert[cornerId[3]],
-                y0 = vert[cornerId[0] + 1], y1 = vert[cornerId[1] + 1], y2 = vert[cornerId[2] + 1], y3 = vert[cornerId[3] + 1];
-            if (((x0-vl.x) & (x1-vl.x) & (x2-vl.x) & (x3-vl.x)) >> 31 || // All outside left
-                ((vr.x-x0) & (vr.x-x1) & (vr.x-x2) & (vr.x-x3)) >> 31 || // All outside right
-                ((y0-vb.y) & (y1-vb.y) & (y2-vb.y) & (y3-vb.y)) >> 31 || // All outside bottom
-                ((vt.y-y0) & (vt.y-y1) & (vt.y-y2) & (vt.y-y3)) >> 31)   // All outside top
-            {
-                this._renderCmd._needDraw = false;
-            }
-            else {
-                this._renderCmd._needDraw = true;
-            }
-        }
-        else {
-            var bb = this._renderCmd._currentRegion,
-                l = bb._minX, r = bb._maxX, b = bb._minY, t = bb._maxY;
-            if (r < vl.x || l > vr.x || t < vb.y || b > vt.y) {
-                this._renderCmd._needDraw = false;
-            }
-            else {
-                this._renderCmd._needDraw = true;
-            }
-        }
+        //disable Culling
+        this._renderCmd._needDraw = true;
 
         this._quadsDirty = false;
         this._uvsDirty = false;
