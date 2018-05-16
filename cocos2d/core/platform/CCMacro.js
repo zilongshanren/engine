@@ -1845,11 +1845,11 @@ cc.macro = {
     ENABLE_GL_STATE_CACHE: CC_EDITOR ? 0 : 1,
 
     /**
-     * !#en 
+     * !#en
      * The timeout to determine whether a touch is no longer active and should be removed.
-     * The reason to add this timeout is due to an issue in X5 browser core, 
+     * The reason to add this timeout is due to an issue in X5 browser core,
      * when X5 is presented in wechat on Android, if a touch is glissed from the bottom up, and leave the page area,
-     * no touch cancel event is triggered, and the touch will be considered active forever. 
+     * no touch cancel event is triggered, and the touch will be considered active forever.
      * After multiple times of this action, our maximum touches number will be reached and all new touches will be ignored.
      * So this new mechanism can remove the touch that should be inactive if it's not updated during the last 5000 milliseconds.
      * Though it might remove a real touch if it's just not moving for the last 5 seconds which is not easy with the sensibility of mobile touch screen.
@@ -1867,17 +1867,17 @@ cc.macro = {
     TOUCH_TIMEOUT: 5000,
 
     /**
-     * !#en 
+     * !#en
      * The maximum vertex count for a single batched draw call.
      * !#zh
      * 最大可以被单次批处理渲染的顶点数量。
      * @property {Number} BATCH_VERTEX_COUNT
      */
-    BATCH_VERTEX_COUNT: 2000,
+    BATCH_VERTEX_COUNT: 1000,
 
     /**
-     * !#en 
-     * JSB only, using JS object life cycle to control C++ object or inversely, 
+     * !#en
+     * JSB only, using JS object life cycle to control C++ object or inversely,
      * it indicates two different memory model controled by the native macro CC_ENABLE_GC_FOR_NATIVE_OBJECTS.
      * Modify the JS macro value won't have any effect.
      * !#zh
