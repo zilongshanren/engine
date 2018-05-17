@@ -80,6 +80,7 @@ cc.gl.useProgram = ENABLE_GL_STATE_CACHE ? function (program) {
     if (program !== _currentShaderProgram) {
         _currentShaderProgram = program;
         cc._renderContext.useProgram(program);
+        cc._vertexCacheDirty = false;
     }
 } : function (program) {
     cc._renderContext.useProgram(program);
@@ -106,14 +107,14 @@ cc.gl.deleteProgram = function (program) {
  */
 cc.gl.setBlending = function (sfactor, dfactor) {
     var ctx = cc._renderContext;
-    if ((sfactor === ctx.ONE) && (dfactor === ctx.ZERO)) {
-        ctx.disable(ctx.BLEND);
-    } else {
-        ctx.enable(ctx.BLEND);
+    // if ((sfactor === ctx.ONE) && (dfactor === ctx.ZERO)) {
+    //     ctx.disable(ctx.BLEND);
+    // } else {
+    //     ctx.enable(ctx.BLEND);
         cc._renderContext.blendFunc(sfactor,dfactor);
         //TODO need fix for WebGL
         //ctx.blendFuncSeparate(ctx.SRC_ALPHA, dfactor, sfactor, dfactor);
-    }
+    // }
 };
 
 /*
@@ -141,14 +142,14 @@ cc.gl.blendFuncForParticle = function(sfactor, dfactor) {
         _blendingSource = sfactor;
         _blendingDest = dfactor;
         var ctx = cc._renderContext;
-        if ((sfactor === ctx.ONE) && (dfactor === ctx.ZERO)) {
-            ctx.disable(ctx.BLEND);
-        } else {
-            ctx.enable(ctx.BLEND);
+        // if ((sfactor === ctx.ONE) && (dfactor === ctx.ZERO)) {
+        //     ctx.disable(ctx.BLEND);
+        // } else {
+            // ctx.enable(ctx.BLEND);
             // TODO need fix for WebGL
             // DO NOT TOUCH THIS, YOU MAY NOT BE ABLE TO FIX EVERYTHING
             ctx.blendFuncSeparate(ctx.SRC_ALPHA, dfactor, sfactor, dfactor);
-        }
+        // }
     }
 };
 
@@ -197,14 +198,14 @@ cc.gl.bindTexture2DN = ENABLE_GL_STATE_CACHE ? function (textureUnit, textureId)
     _currentBoundTexture[textureUnit] = textureId;
 
     var ctx = cc._renderContext;
-    ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
+    // ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
     if(textureId)
         ctx.bindTexture(ctx.TEXTURE_2D, textureId._webTextureObj);
     else
         ctx.bindTexture(ctx.TEXTURE_2D, null);
 } : function (textureUnit, textureId) {
     var ctx = cc._renderContext;
-    ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
+    // ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
     if(textureId)
         ctx.bindTexture(ctx.TEXTURE_2D, textureId._webTextureObj);
     else
@@ -286,4 +287,3 @@ cc.gl.enable = function (flags) {
          cc._renderContext.disable(cc._renderContext.BLEND);*/
     }
 };
-

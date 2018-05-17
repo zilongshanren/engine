@@ -375,7 +375,7 @@ cc.Director = Class.extend(/** @lends cc.Director# */{
     /**
      * !#en Pause the director's ticker, only involve the game logic execution.
      * It won't pause the rendering process nor the event manager.
-     * If you want to pause the entier game including rendering, audio and event, 
+     * If you want to pause the entier game including rendering, audio and event,
      * please use {{#crossLink "Game.pause"}}cc.game.pause{{/crossLink}}
      * !#zh 暂停正在运行的场景，该暂停只会停止游戏逻辑执行，但是不会停止渲染和 UI 响应。
      * 如果想要更彻底得暂停游戏，包含渲染，音频和事件，请使用 {{#crossLink "Game.pause"}}cc.game.pause{{/crossLink}}。
@@ -517,6 +517,7 @@ cc.Director = Class.extend(/** @lends cc.Director# */{
      * @param {Function} [onLaunched] - The function invoked at the scene after launch.
      */
     runSceneImmediate: function (scene, onBeforeLoadScene, onLaunched) {
+        cc._vertexCacheDirty = false;
         var id, node, game = cc.game;
         var persistNodes = game._persistRootNodes;
 

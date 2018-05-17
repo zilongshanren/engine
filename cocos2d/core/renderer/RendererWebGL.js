@@ -134,6 +134,10 @@ cc.rendererWebGL = {
         var gl = cc._renderContext;
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND);
+        gl.activeTexture(0);
+
+        cc._vertexCacheDirty = false;
 
         this.mat4Identity = new cc.math.Matrix4();
         this.mat4Identity.identity();
@@ -258,7 +262,7 @@ cc.rendererWebGL = {
             gl.disable(gl.DEPTH_TEST);
         }
     },
-    
+
     pushRenderCommand: function (cmd) {
         if(!cmd.rendering && !cmd.uploadData)
             return;
@@ -328,6 +332,7 @@ cc.rendererWebGL = {
     },
 
     _breakBatch: function () {
+        console.error('break batch');
         _batchBroken = true;
     },
 
@@ -423,12 +428,15 @@ cc.rendererWebGL = {
             gl.bufferData(gl.ARRAY_BUFFER, view, gl.DYNAMIC_DRAW);
         }
 
-        gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_POSITION);
-        gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_COLOR);
-        gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_TEX_COORDS);
-        gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_POSITION, 3, gl.FLOAT, false, 24, 0);
-        gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_COLOR, 4, gl.UNSIGNED_BYTE, true, 24, 12);
-        gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_TEX_COORDS, 2, gl.FLOAT, false, 24, 16);
+        if (!cc._vertexCacheDirty) {
+            cc._vertexCacheDirty = true;
+            gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_POSITION);
+            gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_COLOR);
+            gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_TEX_COORDS);
+            gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_POSITION, 3, gl.FLOAT, false, 24, 0);
+            gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_COLOR, 4, gl.UNSIGNED_BYTE, true, 24, 12);
+            gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_TEX_COORDS, 2, gl.FLOAT, false, 24, 16);
+        }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
         if (!_prevIndexSize || !_pureQuad || _indexSize > _prevIndexSize) {
@@ -468,7 +476,12 @@ cc.rendererWebGL = {
 
         for (i = 0, len = locCmds.length; i < len; ++i) {
             cmd = locCmds[i];
-            if (!cmd._needDraw) continue;
+            if (!cmd._needDraw) {
+                if (cmd.hackPespective) {
+                    cmd.hackPespective();
+                }
+                continue;
+            }
 
             if (cmd.uploadData) {
                 this._uploadBufferData(cmd);

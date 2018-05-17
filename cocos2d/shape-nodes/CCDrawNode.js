@@ -412,7 +412,7 @@ cc.game.once(cc.game.EVENT_RENDERER_INITED, function () {
                 if (color.a == null)
                     color.a = 255;
                 var element = new cc._DrawNodeElement(cc.DrawNode.TYPE_POLY);
-                
+
                 element.verts = verts;
                 element.fillColor = fillColor;
                 element.lineWidth = lineWidth;
@@ -424,7 +424,7 @@ cc.game.once(cc.game.EVENT_RENDERER_INITED, function () {
                     element.isFill = true;
                 this._buffer.push(element);
             },
-            
+
             /**
              * draw a polygon with a fill color and line color, copying the vertex list
              * @param {Array} verts
@@ -454,7 +454,7 @@ cc.game.once(cc.game.EVENT_RENDERER_INITED, function () {
         });
     }
     else if (cc._renderType === cc.game.RENDER_TYPE_WEBGL) {
-        
+
         cc.js.mixin(cc.DrawNode.prototype, {
             _bufferCapacity:0,
 
@@ -611,6 +611,7 @@ cc.game.once(cc.game.EVENT_RENDERER_INITED, function () {
                 gl.drawArrays(gl.TRIANGLES, 0, this._buffer.length * 3);
                 cc.incrementGLDraws(1);
                 //cc.checkGLErrorDebug();
+                cc._vertexCacheDirty = false;
             },
 
             _ensureCapacity:function(count){

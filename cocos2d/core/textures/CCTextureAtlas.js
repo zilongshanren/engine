@@ -646,7 +646,7 @@ if (cc._renderType === game.RENDER_TYPE_WEBGL) {
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _t._buffersVBO[1]);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, _t._indices, gl.STATIC_DRAW);
-
+            cc._vertexCacheDirty = false;
             //cc.checkGLErrorDebug();
         },
 
@@ -678,6 +678,7 @@ if (cc._renderType === game.RENDER_TYPE_WEBGL) {
                 _t.dirty = false;
             }
 
+            cc._vertexCacheDirty = false;
             gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_POSITION, 3, gl.FLOAT, false, 24, 0);               // vertices
             gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_COLOR, 4, gl.UNSIGNED_BYTE, true, 24, 12);          // colors
             gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_TEX_COORDS, 2, gl.FLOAT, false, 24, 16);            // tex coords
