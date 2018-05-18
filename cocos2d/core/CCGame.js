@@ -560,11 +560,11 @@ var game = {
         callback = function () {
             if (!self._paused) {
                 self._intervalId = window.requestAnimFrame(callback);
-                if (frameRate === 30) {
-                    if (skip = !skip) {
-                        return;
-                    }
-                }
+                // if (frameRate === 30) {
+                //     if (skip = !skip) {
+                //         return;
+                //     }
+                // }
                 director.mainLoop();
             }
         };

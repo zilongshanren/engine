@@ -135,7 +135,7 @@ cc.rendererWebGL = {
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
-        gl.activeTexture(0);
+        gl.activeTexture(gl.TEXTURE0 + 0);
 
         cc._vertexCacheDirty = false;
 
@@ -237,7 +237,7 @@ cc.rendererWebGL = {
 
     pushDirtyNode: function (node) {
         //if (this._transformNodePool.indexOf(node) === -1)
-        this._transformNodePool.push(node);
+        // this._transformNodePool.push(node);
     },
 
     clearRenderCommands: function () {
