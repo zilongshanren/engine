@@ -28,6 +28,12 @@ cc._isWechatGame = function () {
     //TODO: need to refactor in the future
     return window['wx'];
 };
+
+cc._reportErrorMsg = function (msg) {
+    if (Log && Log.Error) {
+        Log.Error(msg);
+    }
+};
 // TODO: 小程序上面判断iOS平台
 cc.isIOSPlatform = function () {
     if (cc._isWechatGame()) {

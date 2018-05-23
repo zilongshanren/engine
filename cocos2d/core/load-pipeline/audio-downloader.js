@@ -65,6 +65,7 @@ function loadDomAudio (item, callback) {
                         url: url,
                         fail: function (res) {
                             if (res.errMsg) {
+                                cc._reportErrorMsg(res.errMsg);
                                 dom.src = url;
                             }
                         },
@@ -73,7 +74,8 @@ function loadDomAudio (item, callback) {
                                 dom.src = localPath;
                                 item.isLoadFromCache = false;
                             } else if (res.statusCode === 404) {
-                                console.error('The file ' + url + ' is not found on the server!');
+                                // console.error('The file ' + url + ' is not found on the server!');
+                                cc._reportErrorMsg('The file ' + url + ' is not found on the server!');
                             }
                         }
                     })

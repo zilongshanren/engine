@@ -130,27 +130,29 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                 //the cache content is broken, need to delete the file
                 if (item.isLoadFromCache) {
                     console.error('Cached file ' + localPath + ' is broken!');
-                    fs.unlink({filePath: localPath, success: function () {
-                        console.warn('unlink ' + localPath + ' successfully!');
-                    }});
-                    wx.downloadFile({
-                        url: url,
-                        filePath: localPath,
-                        fail: function (res) {
-                            if (res.errMsg) {
-                                img.src = url;
-                            }
-                        },
-                        success: function(res) {
-                            if (res.tempFilePath || res.filePath) {
-                                img.src = localPath;
-                                item.isLoadFromCache = false;
+                    fs.unlink({filePath: localPath,
+                               complete: function () {
+                                   console.warn('unlink ' + localPath + ' successfully!');
+                                   wx.downloadFile({
+                                       url: url,
+                                       filePath: localPath,
+                                       fail: function (res) {
+                                           if (res.errMsg) {
+                                               cc._reportErrorMsg(res.errMsg);
+                                               img.src = url;
+                                           }
+                                       },
+                                       success: function(res) {
+                                           if (res.tempFilePath || res.filePath) {
+                                               img.src = localPath;
+                                               item.isLoadFromCache = false;
 
-                            } else if (res.statusCode === 404) {
-                                console.error('The file ' + url + ' is not found on the server!');
-                            }
-                        }
-                    })
+                                           } else if (res.statusCode === 404) {
+                                               cc._reportErrorMsg('The file ' + url + ' is not found on the server!');
+                                           }
+                                       }
+                                   })
+                               }});
                 } else {
                     var codeResList = cc.AssetLibrary._codeResList;
                     if (codeResList.indexOf(filePath) > -1) {
@@ -169,6 +171,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                 url: url,
                                 fail: function (res) {
                                     if (res.errMsg) {
+                                        cc._reportErrorMsg(res.errMsg);
                                         img.src = url;
                                     }
                                 },
@@ -177,7 +180,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                         img.src = localPath;
                                         item.isLoadFromCache = false;
                                     } else if (res.statusCode === 404) {
-                                        console.error('The file ' + url + ' is not found on the server!');
+                                        cc._reportErrorMsg('The file ' + url + ' is not found on the server!');
                                     }
                                 }
                             })
