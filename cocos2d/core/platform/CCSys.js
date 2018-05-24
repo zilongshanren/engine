@@ -30,9 +30,7 @@ cc._isWechatGame = function () {
 };
 
 cc._reportErrorMsg = function (msg) {
-    if (Log && Log.Error) {
-        Log.Error(msg);
-    }
+    window.badjs && window.badjs.report(msg);
 };
 // TODO: 小程序上面判断iOS平台
 cc.isIOSPlatform = function () {

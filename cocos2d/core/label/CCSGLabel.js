@@ -1322,7 +1322,9 @@ _ccsg.Label = _ccsg.Node.extend({
                 var self = this;
                 this._resetBMFont();
 
-                this._fontAsset._fntConfig = FntLoader.parseFnt(this._fontAsset.fntDataStr);
+                if (!this._fontAsset._fntConfig)  {
+                    this._fontAsset._fntConfig = FntLoader.parseFnt(this._fontAsset.fntDataStr);
+                }
                 var fntConfig = this._fontAsset._fntConfig;
                 if (fntConfig) {
                     self._config = fntConfig;
