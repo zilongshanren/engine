@@ -230,7 +230,7 @@
 
         for (var i = 0; i < paragraphedStrings.length; ++i) {
             var textMetric = ctx.measureText(paragraphedStrings[i]);
-            paragraphLength.push(textMetric.width);
+            paragraphLength.push(textMetric ? textMetric.width : 0);
         }
 
         return paragraphLength;

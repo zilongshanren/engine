@@ -74,7 +74,7 @@ else {
                 var localPath = wx.env.USER_DATA_PATH + '/' + ccfs.basename(filePath);
 
                 if (item.isLoadFromCache && item.complete) {
-                    cc._reportErrorMsg('Cached file ' + localPath + ' is broken!');
+                    cc._MJLog('Cached file ' + localPath + ' is broken!');
                     fs.unlink({filePath: localPath,
                                success: function () {
                                    console.warn('unlink ' + localPath + ' successfully!');
@@ -95,7 +95,8 @@ else {
                         },
                         fail: function (res) {
                             if (res.errMsg) {
-                                cc._reportErrorMsg('read code file path' + filePath + ' failed!');
+                                cc._MJLog('read code file path' + filePath + ' failed!');
+
                                 cc.game.emit('xhr-load-error:', res.errMsg);
                                 //如果读本地代码包内的文件失败，则不使用本地代码包内的缓存文件
                                 codeResList.splice(filePath, 1);
@@ -119,7 +120,8 @@ else {
                             },
                             fail: function (res) {
                                 if (res.errMsg) {
-                                    ccc._reportErrorMsg('read file failed!');
+                                    cc._MJLog('read file failed! ' + res.errMsg);
+
                                     fs.unlink({filePath: localPath, success: function () {
                                         console.warn('unlink ' + localPath + ' successfully!');
                                     }});
@@ -163,7 +165,7 @@ else {
                                     } else {
                                         cc.game.emit('xhr-load-error:', res.errMsg);
 
-                                        cc._reportErrorMsg('download file' + url + ' error!');
+                                        cc._MJLog('download file' + url + ' error!');
 
                                         callback({status:0, errorMessage: res.errMsg});
                                     }

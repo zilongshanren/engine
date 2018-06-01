@@ -32,6 +32,11 @@ cc._isWechatGame = function () {
 cc._reportErrorMsg = function (msg) {
     window.badjs && window.badjs.report(msg);
 };
+
+cc._MJLog = function (msg) {
+    Log && Log.Info(msg);
+};
+
 // TODO: 小程序上面判断iOS平台
 cc.isIOSPlatform = function () {
     if (cc._isWechatGame()) {

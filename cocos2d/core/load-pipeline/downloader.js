@@ -129,16 +129,16 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                 var localPath = wx.env.USER_DATA_PATH + '/' + ccfs.basename(filePath);
                 //the cache content is broken, need to delete the file
                 if (item.isLoadFromCache) {
-                    console.error('Cached file ' + localPath + ' is broken!');
+                    cc._MJLog('Cached file ' + localPath + ' is broken!');
                     fs.unlink({filePath: localPath,
                                complete: function () {
-                                   console.warn('unlink ' + localPath + ' successfully!');
+                                   cc._MJLog('unlink ' + localPath + ' successfully!');
                                    wx.downloadFile({
                                        url: url,
                                        filePath: localPath,
                                        fail: function (res) {
                                            if (res.errMsg) {
-                                               cc._reportErrorMsg(res.errMsg);
+                                               cc._MJLog(res.errMsg);
                                                img.src = url;
                                            }
                                        },
@@ -148,7 +148,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                                item.isLoadFromCache = false;
 
                                            } else if (res.statusCode === 404) {
-                                               cc._reportErrorMsg('The file ' + url + ' is not found on the server!');
+                                               cc._MJLog('The file ' + url + ' is not found on the server!');
                                            }
                                        }
                                    })
@@ -171,7 +171,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                 url: url,
                                 fail: function (res) {
                                     if (res.errMsg) {
-                                        cc._reportErrorMsg(res.errMsg);
+                                        cc._MJLog(res.errMsg);
                                         img.src = url;
                                     }
                                 },
@@ -180,7 +180,7 @@ function downloadImage (item, callback, isCrossOrigin, img) {
                                         img.src = localPath;
                                         item.isLoadFromCache = false;
                                     } else if (res.statusCode === 404) {
-                                        cc._reportErrorMsg('The file ' + url + ' is not found on the server!');
+                                        cc._MJLog('The file ' + url + ' is not found on the server!');
                                     }
                                 }
                             })
