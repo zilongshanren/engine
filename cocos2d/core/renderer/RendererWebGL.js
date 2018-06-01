@@ -236,8 +236,8 @@ cc.rendererWebGL = {
     },
 
     pushDirtyNode: function (node) {
-        //if (this._transformNodePool.indexOf(node) === -1)
-        // this._transformNodePool.push(node);
+        // if (this._transformNodePool.indexOf(node) === -1)
+        this._transformNodePool.push(node);
     },
 
     clearRenderCommands: function () {
