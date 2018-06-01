@@ -80,7 +80,6 @@ cc.gl.useProgram = ENABLE_GL_STATE_CACHE ? function (program) {
     if (program !== _currentShaderProgram) {
         _currentShaderProgram = program;
         cc._renderContext.useProgram(program);
-        cc._vertexCacheDirty = false;
     }
 } : function (program) {
     cc._renderContext.useProgram(program);
@@ -198,14 +197,14 @@ cc.gl.bindTexture2DN = ENABLE_GL_STATE_CACHE ? function (textureUnit, textureId)
     _currentBoundTexture[textureUnit] = textureId;
 
     var ctx = cc._renderContext;
-    // ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
+    ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
     if(textureId)
         ctx.bindTexture(ctx.TEXTURE_2D, textureId._webTextureObj);
     else
         ctx.bindTexture(ctx.TEXTURE_2D, null);
 } : function (textureUnit, textureId) {
     var ctx = cc._renderContext;
-    // ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
+    ctx.activeTexture(ctx.TEXTURE0 + textureUnit);
     if(textureId)
         ctx.bindTexture(ctx.TEXTURE_2D, textureId._webTextureObj);
     else

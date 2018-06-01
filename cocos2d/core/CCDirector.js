@@ -285,7 +285,7 @@ cc.Director = Class.extend(/** @lends cc.Director# */{
         if (this._runningScene) {
             var renderer = cc.renderer;
             if (renderer.childrenOrderDirty) {
-                update the whole scene
+                // update the whole scene
                 renderer.clearRenderCommands();
                 cc.renderer.assignedZ = 0;
                 this._runningScene._renderCmd._curLevel = 0; //level start from 0;
@@ -517,7 +517,6 @@ cc.Director = Class.extend(/** @lends cc.Director# */{
      * @param {Function} [onLaunched] - The function invoked at the scene after launch.
      */
     runSceneImmediate: function (scene, onBeforeLoadScene, onLaunched) {
-        cc._vertexCacheDirty = false;
         var id, node, game = cc.game;
         var persistNodes = game._persistRootNodes;
 

@@ -611,7 +611,6 @@ cc.game.once(cc.game.EVENT_RENDERER_INITED, function () {
                 gl.drawArrays(gl.TRIANGLES, 0, this._buffer.length * 3);
                 cc.incrementGLDraws(1);
                 //cc.checkGLErrorDebug();
-                cc._vertexCacheDirty = false;
             },
 
             _ensureCapacity:function(count){

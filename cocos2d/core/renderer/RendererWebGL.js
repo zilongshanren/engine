@@ -135,9 +135,7 @@ cc.rendererWebGL = {
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
-        gl.activeTexture(gl.TEXTURE0 + 0);
 
-        cc._vertexCacheDirty = false;
 
         this.mat4Identity = new cc.math.Matrix4();
         this.mat4Identity.identity();
@@ -428,15 +426,12 @@ cc.rendererWebGL = {
             gl.bufferData(gl.ARRAY_BUFFER, view, gl.DYNAMIC_DRAW);
         }
 
-        if (!cc._vertexCacheDirty) {
-            cc._vertexCacheDirty = true;
-            gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_POSITION);
-            gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_COLOR);
-            gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_TEX_COORDS);
-            gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_POSITION, 3, gl.FLOAT, false, 24, 0);
-            gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_COLOR, 4, gl.UNSIGNED_BYTE, true, 24, 12);
-            gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_TEX_COORDS, 2, gl.FLOAT, false, 24, 16);
-        }
+        gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_POSITION);
+        gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_COLOR);
+        gl.enableVertexAttribArray(cc.macro.VERTEX_ATTRIB_TEX_COORDS);
+        gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_POSITION, 3, gl.FLOAT, false, 24, 0);
+        gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_COLOR, 4, gl.UNSIGNED_BYTE, true, 24, 12);
+        gl.vertexAttribPointer(cc.macro.VERTEX_ATTRIB_TEX_COORDS, 2, gl.FLOAT, false, 24, 16);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
         if (!_prevIndexSize || !_pureQuad || _indexSize > _prevIndexSize) {
