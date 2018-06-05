@@ -392,7 +392,7 @@ var EventAnimCurve = cc.Class({
         var events = eventInfo.events;
         var components = this.target._components;
 
-        try {
+        if (CC_DEV) {
             for (var i = 0;  i < events.length; i++) {
                 var event = events[i];
                 var funcName = event.func;
@@ -404,13 +404,28 @@ var EventAnimCurve = cc.Class({
                     if (func) func.apply(component, event.params);
                 }
             }
-        } catch (e) {
-            if (Log && Log.Error) {
-                Log.Error(e.message);
-            } else {
-                console.error(e.message);
+        } else {
+            try {
+                for (var i = 0;  i < events.length; i++) {
+                    var event = events[i];
+                    var funcName = event.func;
+
+                    for (var j = 0; j < components.length; j++) {
+                        var component = components[j];
+                        var func = component[funcName];
+
+                        if (func) func.apply(component, event.params);
+                    }
+                }
+            } catch (e) {
+                if (Log && Log.Error) {
+                    Log.Error(e.message);
+                } else {
+                    console.error(e.message);
+                }
             }
         }
+
     },
 
     onTimeChangedManually: function (time, animationNode) {

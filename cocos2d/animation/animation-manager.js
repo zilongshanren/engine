@@ -33,17 +33,25 @@ var AnimationManager = cc.Class({
         }
         removeList.length = 0;
 
-        try {
+        if (CC_DEV) {
             var events = this._delayEvents;
             for (i = 0, l = events.length; i < l; i++) {
                 var event = events[i];
                 event.target[event.func].apply(event.target, event.args);
             }
-        } catch (e) {
-            if (Log && Log.Error) {
-                Log.Error(e.message);
-            } else {
-                console.error(e.message);
+        } else {
+            try {
+                var events = this._delayEvents;
+                for (i = 0, l = events.length; i < l; i++) {
+                    var event = events[i];
+                    event.target[event.func].apply(event.target, event.args);
+                }
+            } catch (e) {
+                if (Log && Log.Error) {
+                    Log.Error(e.message);
+                } else {
+                    console.error(e.message);
+                }
             }
         }
         events.length = 0;
