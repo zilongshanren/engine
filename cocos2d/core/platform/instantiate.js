@@ -145,18 +145,48 @@ function doInstantiate (obj, parent) {
 var SERIALIZABLE = Attr.DELIMETER + 'serializable';
 // @param {Object} obj - The object to instantiate, typeof must be 'object' and should not be an array.
 
+var copyValueTypeFunc = {
+    'cc.Color': function (src, dst) {
+        src._val = dst._val;
+    },
+    'cc.Vec2': function (src, dst) {
+        src.x = dst.x;
+        src.y = dst.y;
+    },
+    'cc.Size': function (src, dst) {
+        src.width = dst.width;
+        src.height = dst.height;
+    },
+    'cc.Rect': function (src, dst) {
+        src.x  = dst.x;
+        src.y = dst.y;
+        src.width = dst.width;
+        src.height = dst.height;
+    }
+};
 function enumerateCCClass (klass, obj, clone, parent) {
     var props = klass.__props__;
     var attrs = Attr.getClassAttrs(klass);
+
+    // var index = props.indexOf('_sgNode');
+    // if (index > -1) {
+    //     props.splice(index, 1);
+    // }
+
     for (var p = 0; p < props.length; p++) {
         var key = props[p];
+        var value = obj[key];
+
         if (attrs[key + SERIALIZABLE] !== false) {
-            var value = obj[key];
-            if (typeof value === 'object' && value) {
-                clone[key] = value._iN$t || instantiateObj(value, parent);
-            }
-            else {
-                clone[key] = value;
+            if (value && copyValueTypeFunc[value.__classname__]) {
+                copyValueTypeFunc[value.__classname__](clone[key], value);
+            } else {
+                if (typeof value === 'object' && value) {
+                    clone[key] = value._iN$t || instantiateObj(value, parent);
+                }
+                else {
+                    clone[key] = value;
+                }
             }
         }
     }
@@ -205,9 +235,9 @@ function enumerateObject (obj, clone, parent) {
  * @return {Object|Array} - the original non-nil object, typeof must be 'object'
  */
 function instantiateObj (obj, parent) {
-    if (obj instanceof cc.ValueType) {
-        return obj.clone();
-    }
+    // if (obj instanceof cc.ValueType) {
+    //     return obj.clone();
+    // }
     if (obj instanceof cc.Asset) {
         // 所有资源直接引用，不需要拷贝
         return obj;
