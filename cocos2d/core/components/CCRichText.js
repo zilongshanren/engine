@@ -635,6 +635,10 @@ let RichText = cc.Class({
     _updateRichText () {
         if (!this.enabled) return;
 
+        if (this.string.indexOf('<color=#' + this.node.color.toHEX()) === -1) {
+            this._N$string = '<color=#' + this.node.color.toHEX() + '>' + this.string + '</color>'
+        }
+
         let newTextArray = _htmlTextParser.parse(this.string);
         if (!this._needsUpdateTextLayout(newTextArray)) {
             this._textArray = newTextArray;

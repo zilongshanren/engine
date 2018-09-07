@@ -138,8 +138,10 @@ exports.getUglifyOptions = function (platform, flags) {
 };
 
 exports.uglify = function (platform, isJSB, isDebugBuild) {
-    const Composer = require('gulp-uglify/composer');
-    const Uglify = require('uglify-es');
-    const minify = Composer(Uglify);
-    return minify(exports.getUglifyOptions(platform, isJSB, isDebugBuild));
+    const Es = require('event-stream');
+    return Es.through();
+    // const Composer = require('gulp-uglify/composer');
+    // const Uglify = require('uglify-es');
+    // const minify = Composer(Uglify);
+    // return minify(exports.getUglifyOptions(platform, isJSB, isDebugBuild));
 };
