@@ -23,7 +23,13 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
+cc._reportErrorMsg = function (e, msg) {
+    if (Log && Log.Error) {
+        Log.Error(e.message);
+    } else {
+        console.error(e.message);
+    }
+};
 function initSys () {
     /**
      * System variables

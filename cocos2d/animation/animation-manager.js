@@ -45,10 +45,22 @@ var AnimationManager = cc.Class({
             }
         }
 
-        var events = this._delayEvents;
-        for (let i = 0, l = events.length; i < l; i++) {
-            var event = events[i];
-            event.target[event.func].apply(event.target, event.args);
+        if (CC_DEV) {
+            var events = this._delayEvents;
+            for (let i = 0, l = events.length; i < l; i++) {
+                var event = events[i];
+                event.target[event.func].apply(event.target, event.args);
+            }
+        } else {
+            try {
+                var events = this._delayEvents;
+                for (let i = 0, l = events.length; i < l; i++) {
+                    var event = events[i];
+                    event.target[event.func].apply(event.target, event.args);
+                }
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
         }
         events.length = 0;
     },

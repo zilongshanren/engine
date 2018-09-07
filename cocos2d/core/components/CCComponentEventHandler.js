@@ -142,6 +142,14 @@ cc.Component.EventHandler = cc.Class({
             params.push(this.customEventData);
         }
 
-        handler.apply(comp, params);
+        if (CC_DEV) {
+            handler.apply(comp, params);
+        } else {
+            try {
+                handler.apply(comp, params);
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
+        }
     }
 });

@@ -475,7 +475,15 @@ cc.CallFunc = cc.Class({
      */
     execute:function () {
         if (this._function) {
-            this._function.call(this._selectorTarget, this.target, this._data);
+            if (CC_DEV) {
+                this._function.call(this._selectorTarget, this.target, this._data);
+            } else {
+                try {
+                    this._function.call(this._selectorTarget, this.target, this._data);
+                } catch (e) {
+                    cc._reportErrorMsg(e, e.stack);
+                }
+            }
         }
     },
 

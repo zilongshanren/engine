@@ -394,11 +394,11 @@ var EventAnimCurve = cc.Class({
 
         var eventInfo = this.events[index];
         var events = eventInfo.events;
-        
-        if ( !this.target.isValid ) { 
-            return; 
+
+        if ( !this.target.isValid ) {
+            return;
         }
-        
+
         var components = this.target._components;
 
         for (var i = 0;  i < events.length; i++) {
@@ -409,7 +409,15 @@ var EventAnimCurve = cc.Class({
                 var component = components[j];
                 var func = component[funcName];
 
-                if (func) func.apply(component, event.params);
+                if (CC_DEV) {
+                    if (func) func.apply(component, event.params);
+                } else {
+                    try {
+                        if (func) func.apply(component, event.params);
+                    } catch (e) {
+                        cc._reportErrorMsg(e, e.stack);
+                    }
+                }
             }
         }
     },

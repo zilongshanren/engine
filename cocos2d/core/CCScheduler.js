@@ -237,9 +237,19 @@ proto.getCallback = function(){
 
 proto.trigger = function () {
     if (this._target && this._callback) {
-        this._lock = true;
-        this._callback.call(this._target, this._elapsed);
-        this._lock = false;
+        if (CC_DEV) {
+            this._lock = true;
+            this._callback.call(this._target, this._elapsed);
+            this._lock = false;
+        } else {
+            try {
+                this._lock = true;
+                this._callback.call(this._target, this._elapsed);
+                this._lock = false;
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
+        }
     }
 };
 
@@ -407,22 +417,46 @@ cc.Scheduler.prototype = {
 
         var i, list, len, entry;
 
-        for(i=0,list=this._updatesNegList, len = list.length; i<len; i++){
-            entry = list[i];
-            if (!entry.paused && !entry.markedForDeletion)
-                entry.target.update(dt);
-        }
+        if (CC_DEV) {
+            for(i=0,list=this._updatesNegList, len = list.length; i<len; i++){
+                entry = list[i];
+                if (!entry.paused && !entry.markedForDeletion)
+                    entry.target.update(dt);
+            }
 
-        for(i=0, list=this._updates0List, len=list.length; i<len; i++){
-            entry = list[i];
-            if (!entry.paused && !entry.markedForDeletion)
-                entry.target.update(dt);
-        }
+            for(i=0, list=this._updates0List, len=list.length; i<len; i++){
+                entry = list[i];
+                if (!entry.paused && !entry.markedForDeletion)
+                    entry.target.update(dt);
+            }
 
-        for(i=0, list=this._updatesPosList, len=list.length; i<len; i++){
-            entry = list[i];
-            if (!entry.paused && !entry.markedForDeletion)
-                entry.target.update(dt);
+            for(i=0, list=this._updatesPosList, len=list.length; i<len; i++){
+                entry = list[i];
+                if (!entry.paused && !entry.markedForDeletion)
+                    entry.target.update(dt);
+            }
+        } else {
+            try {
+                for(i=0,list=this._updatesNegList, len = list.length; i<len; i++){
+                    entry = list[i];
+                    if (!entry.paused && !entry.markedForDeletion)
+                        entry.target.update(dt);
+                }
+
+                for(i=0, list=this._updates0List, len=list.length; i<len; i++){
+                    entry = list[i];
+                    if (!entry.paused && !entry.markedForDeletion)
+                        entry.target.update(dt);
+                }
+
+                for(i=0, list=this._updatesPosList, len=list.length; i<len; i++){
+                    entry = list[i];
+                    if (!entry.paused && !entry.markedForDeletion)
+                        entry.target.update(dt);
+                }
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
         }
 
         // Iterate over all the custom selectors
@@ -692,7 +726,7 @@ cc.Scheduler.prototype = {
         }
     },
 
-    /** 
+    /**
      * !#en Unschedules the update callback for a given target.
      * !#zh 取消指定对象的 update 定时器。
      * @method unscheduleUpdate
@@ -722,7 +756,7 @@ cc.Scheduler.prototype = {
         }
     },
 
-    /** 
+    /**
      * !#en
      * Unschedules all scheduled callbacks for a given target.
      * This also includes the "update" callback.
@@ -750,7 +784,7 @@ cc.Scheduler.prototype = {
         var element = this._hashForTimers[targetId];
         if (element) {
             var timers = element.timers;
-            if (timers.indexOf(element.currentTimer) > -1 && 
+            if (timers.indexOf(element.currentTimer) > -1 &&
                 (!element.currentTimerSalvaged)) {
                 element.currentTimerSalvaged = true;
             }
@@ -837,7 +871,7 @@ cc.Scheduler.prototype = {
         }
     },
 
-    /** 
+    /**
      * !#en Checks whether a callback for a given target is scheduled.
      * !#zh 检查指定的回调函数和回调对象组合是否存在定时器。
      * @method isScheduled
@@ -860,7 +894,7 @@ cc.Scheduler.prototype = {
                 cc.errorID(1510);
             }
         }
-        
+
         var element = this._hashForTimers[targetId];
 
         if (!element) {
@@ -1001,7 +1035,7 @@ cc.Scheduler.prototype = {
         }
 
         //customer selectors
-        var self = this, 
+        var self = this,
             element = self._hashForTimers[targetId];
         if (element) {
             element.paused = true;

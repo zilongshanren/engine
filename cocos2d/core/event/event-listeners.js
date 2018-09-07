@@ -46,7 +46,15 @@ EventListeners.prototype.invoke = function (event, captureListeners) {
             var callback = callbacks[i];
             if (callback) {
                 var target = targets[i] || event.currentTarget;
-                callback.call(target, event, captureListeners);
+                if (CC_DEV) {
+                    callback.call(target, event, captureListeners);
+                } else {
+                    try {
+                        callback.call(target, event, captureListeners);
+                    } catch (e) {
+                        cc._reportErrorMsg(e, e.stack);
+                    }
+                }
                 if (event._propagationImmediateStopped) {
                     break;
                 }
