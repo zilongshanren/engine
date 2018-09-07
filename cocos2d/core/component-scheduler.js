@@ -304,7 +304,15 @@ var ComponentScheduler = cc.Class({
             for (iterator.i = 0; iterator.i < array.length; ++iterator.i) {
                 let comp = array[iterator.i];
                 if (comp._enabled) {
-                    comp.onEnable();
+                    if (CC_DEV) {
+                        comp.onEnable();
+                    } else {
+                        try {
+                            comp.onEnable();
+                        } catch (e) {
+                            cc._reportErrorMsg(e, e.stack);
+                        }
+                    }
                     var deactivatedDuringOnEnable = !comp.node._activeInHierarchy;
                     if (!deactivatedDuringOnEnable) {
                         compScheduler._onEnabled(comp);
@@ -408,7 +416,15 @@ var ComponentScheduler = cc.Class({
     } : function (comp) {
         if (comp._objFlags & IsOnEnableCalled) {
             if (comp.onDisable) {
-                comp.onDisable();
+                if (CC_DEV) {
+                    comp.onDisable();
+                } else {
+                    try {
+                        comp.onDisable();
+                    } catch (e) {
+                        cc._reportErrorMsg(e, e.stack);
+                    }
+                }
             }
             this._onDisabled(comp);
         }
@@ -444,7 +460,15 @@ var ComponentScheduler = cc.Class({
         }
 
         // call start
-        this.startInvoker.invoke();
+        if (CC_DEV) {
+            this.startInvoker.invoke();
+        } else {
+            try {
+                this.startInvoker.invoke();
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
+        }
         // if (CC_PREVIEW) {
         //     try {
         //         this.startInvoker.invoke();
@@ -463,11 +487,27 @@ var ComponentScheduler = cc.Class({
     },
 
     updatePhase (dt) {
-        this.updateInvoker.invoke(dt);
+        if (CC_DEV) {
+            this.updateInvoker.invoke(dt);
+        } else {
+            try {
+                this.updateInvoker.invoke(dt);
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
+        }
     },
 
     lateUpdatePhase (dt) {
-        this.lateUpdateInvoker.invoke(dt);
+        if (CC_DEV) {
+            this.lateUpdateInvoker.invoke(dt);
+        } else {
+            try {
+                this.lateUpdateInvoker.invoke(dt);
+            } catch (e) {
+                cc._reportErrorMsg(e, e.stack);
+            }
+        }
 
         // End of this frame
         this._updating = false;

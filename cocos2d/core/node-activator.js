@@ -46,7 +46,15 @@ var callOnLostFocusInTryCatch = CC_EDITOR && callerFunctor('onLostFocusInEditor'
 
 var callPreload = CC_SUPPORT_JIT ? 'c.__preload();' : function (c) { c.__preload(); };
 var callOnLoad = CC_SUPPORT_JIT ? ('c.onLoad();c._objFlags|=' + IsOnLoadCalled) : function (c) {
-    c.onLoad();
+    if (CC_DEV) {
+        c.onLoad();
+    } else {
+        try {
+            c.onLoad();
+        } catch (e) {
+            cc._reportErrorMsg(e, e.stack);
+        }
+    }
     c._objFlags |= IsOnLoadCalled;
 };
 
